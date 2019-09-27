@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import npyscreen
+from items import *
 
 GAME_NAME: str = "Allonsy"
 game_time = 0
@@ -24,24 +25,33 @@ class Room:
         return result
 
 
-class time_display:
+class TimeDisplay:
     def __init__(self):
         global game_time
         self.time = game_time
         # Intent of the following is to provide x,y location for the time portion of the HUD
+        # TODO: fill the rest out
         self.locx = 0
         self.locy = 0
         self.label = f"TIME: {game_time:4.0f}"
 
-def make_rooms():
-    rooms = []
+
+td = TimeDisplay()
+
+
+class HP:
+    def __init__(self):
+        consequences = []
+
+
+hp = HP()
 
 
 def travel_time():
     # Adjust this as necessary for travel time between rooms?
     global game_time
     game_time = game_time + 0.25
-    time_display.label = f"TIME: {game_time:4.0f}"
+    TimeDisplay.label = f"TIME: {game_time:4.0f}"
 
 
 def minor_action_time():
@@ -56,6 +66,9 @@ def major_action_time():
     game_time = game_time + 5
 
 
+def make_rooms():
+    rooms = []
+
     # TODO randomly link rooms together
     reactor_room = Room()
     reactor_room.name = "Reactor Room"
@@ -68,7 +81,7 @@ def major_action_time():
 active_room = Room()
 active_room.empty([5, 7])
 active_room.name = "Test Room"
-
+inv = PCInventory()
 
 def draw_game_ui():
     npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
@@ -77,7 +90,7 @@ def draw_game_ui():
     )
     time = form.add(
         npyscreen.TitleText,
-        name=f"Time: {get_time_display()}\tLocation: {active_room.name}",
+        name=f"Time: {td.label}\tLocation: {active_room.name}",
     )
 
     ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
