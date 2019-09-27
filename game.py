@@ -2,6 +2,7 @@
 # encoding: utf-8
 
 import npyscreen
+
 from items import *
 
 GAME_NAME: str = "Allonsy"
@@ -10,19 +11,40 @@ game_time = 0
 
 class Room:
     def __init__(self):
-        self.contents = []
+        self.contents = [[]]
         self.name = "FIXME"
 
     def empty(self, dims):
-        self.contents = [[None for _ in range(0, dims[1])] for _ in range(0, dims[0])]
+        self.contents = [[None for _ in range(0, dims[0])] for _ in range(0, dims[1])]
+        for y in range(0, dims[1]):
+            self.contents[y][0] = Wall()
+            self.contents[y][dims[0] - 1] = Wall()
+
+        for x in range(0, dims[0]):
+            self.contents[0][x] = Wall()
+            self.contents[dims[1] - 1][x] = Wall()
 
     def render(self):
         result = ""
         for y, row in enumerate(self.contents):
             for x, thing in enumerate(row):
-                result += " " if not thing else thing.render() + " "
+                result += " "
+                if thing:
+                    rendered = thing.render([x, y], self)
+                    if len(rendered) == 1:
+                        result += " "
+                    result += rendered
+                else:
+                    result += "  "
             result += "\n"
         return result
+
+    def get(self, coords):
+        if 0 <= coords[1] < len(self.contents) and 0 <= coords[0] < len(
+            self.contents[0]
+        ):
+            return self.contents[coords[1]][coords[0]]
+        return None
 
 
 class TimeDisplay:
@@ -72,16 +94,16 @@ def make_rooms():
     # TODO randomly link rooms together
     reactor_room = Room()
     reactor_room.name = "Reactor Room"
-    reactor_room.empty([5, 5])
+    reactor_room.empty([9, 9])
+    reactor_room.contents[0][3] = Door()
     rooms.append(reactor_room)
 
     return rooms
 
 
-active_room = Room()
-active_room.empty([5, 7])
-active_room.name = "Test Room"
 inv = PCInventory()
+active_room = make_rooms()[0]
+
 
 def draw_game_ui():
     npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
@@ -89,8 +111,7 @@ def draw_game_ui():
         name=f"Welcome to {GAME_NAME}", FIX_MINIMUM_SIZE_WHEN_CREATED=True
     )
     time = form.add(
-        npyscreen.TitleText,
-        name=f"Time: {td.label}\tLocation: {active_room.name}",
+        npyscreen.TitleText, name=f"Time: {td.label}\tLocation: {active_room.name}"
     )
 
     ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
