@@ -1,0 +1,12 @@
+.idea/
+target/
+tmp/
+temp/
+__pycache__/
+data/
+data_net/
+ponegan.egg-info/
+
+.venv
+.ipynb_checkpoints
+.fuse_hidden*
