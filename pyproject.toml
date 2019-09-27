@@ -6,6 +6,8 @@ authors = ["Luna <github@luna.allan.scot>"]
 
 [tool.poetry.dependencies]
 python = "^3.7"
+npyscreen = "^4.10"
+windows-curses = "^2.0"
 
 [tool.poetry.dev-dependencies]
 
