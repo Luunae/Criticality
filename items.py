@@ -1,3 +1,6 @@
+import npyscreen
+
+
 class Entity:
     def render(self, coords, room):
         raise Exception("TODO")
@@ -24,19 +27,15 @@ class Wall(Entity):
         return "|"
 
 
-class PCInventory(Entity):
-    def __init__(self):
-        pass
-
-
 class HealthPack(Entity):
     def __init__(self):
-        pass
+        self.name = "Health Pack"
 
-    def rm_consequence(self, consequence):
-        if len(consequence) > 0:
-            consequence.pop(0)
-            # TODO: remove from inventory
+    def use_item(self, game):
+        if len(game.hp.consequences) > 0:
+            game.hp.consequences.pop(0)
+        game.inv.remove(self)
+        npyscreen.notify_confirm("Removed a consequence!")
 
 
 class Crowbar(Entity):
@@ -47,9 +46,6 @@ class Crowbar(Entity):
 class Box(Entity):
     def render(self, coords, room):
         return "X"
-
-
-inventory = []
 
 
 class Door(Wall):

@@ -1,11 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import curses
-from typing import List, Any
-
-import npyscreen
-
-from items import PCInventory
+from items import *
 from rooms import make_rooms
 
 GAME_NAME: str = "Allonsy"
@@ -24,7 +20,7 @@ class TimeDisplay:
 
 class HP:
     def __init__(self):
-        consequences = []
+        self.consequences = ["1"]
 
 
 def travel_time():
@@ -48,7 +44,8 @@ def major_action_time():
 
 class Game:
     def __init__(self):
-        self.inv = PCInventory()
+        # state of various entities/room thingies
+        self.inv = [HealthPack()]
         self.rooms = make_rooms()
         self.active_room = self.rooms[0]
         self.hp = HP()
@@ -57,10 +54,15 @@ class Game:
 
         self.top_bar = None
         self.map = None
+        self.status = ["fine"]
+
+    def show_status(self):
+        npyscreen.notify_confirm(game.status)
 
     def setup_form(self, form):
         self.top_bar = form.add(npyscreen.TitleFixedText)
         self.map = form.add(npyscreen.MultiLineEdit, max_height=10)
+        form.add(npyscreen.TitleText, name="Room:", value="set this to roomLoc")
 
     def update(self):
         self.top_bar.set_value(f"{game.td.text()}\tLOCATION: {game.active_room.name}")
@@ -75,23 +77,30 @@ class MainMenu(npyscreen.FormWithMenus):
         self.m3 = None
 
     def create(self):
-        self.add(npyscreen.TitleText, name="Text:", value="just some text?")
         self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
         # This bit supposedly creates menus
-        self.m1 = self.add_menu(name="Main Menu", shortcut="^M")
-        self.m1.addItemsFromList(
-            [
-                ("Display Text", self.when_display_text, None, None, ("Time might go here?",)),
-                ("Just Beep", self.when_just_beep, "e"),
-                ("Exit Menu", self.exit_application, "exit?"),
-            ]
+        # Inventory, Status, Notes, Hint(s?), Current Progress
+        self.m1 = self.add_menu(name="Inventory", shortcut="i")
+        for inv_item in game.inv:
+            def use_inv_item():
+                inv_item.use_item(game)
+
+            self.m1.addItemsFromList(
+                [(inv_item.name, use_inv_item)]
+            )
+
+        self.m1.addItem(
+            text="Status", onSelect=game.show_status, shortcut="s", arguments=None, keywords=None
         )
+        # self.m1 = self.add_menu(name="Status", shortcut="s")
+        # self.m1 = self.addItemsFromList(
+        #     [game.status]
+        # )
 
-        self.m2 = self.add_menu(name="Another Menu", shortcut="b")
-        self.m2.addItemsFromList([("Just Beep", self.when_just_beep)])
+        # self.m3 = self.m2.addNewSubmenu("A sub menu", "^F")
+        # self.m3.addItemsFromList([("Just Beep", self.when_just_beep)])
 
-        self.m3 = self.m2.addNewSubmenu("A sub menu", "^F")
-        self.m3.addItemsFromList([("Just Beep", self.when_just_beep)])
+
 
     def when_display_text(self, argument):
         npyscreen.notify_confirm(argument)
@@ -108,7 +117,7 @@ class MainMenu(npyscreen.FormWithMenus):
 
 # def open_menu():
 #     # TODO: Draw menu
-#     # Inventory, Status, Notes, Hint(s?), Current Progress
+#
 #     pass
 
 
@@ -134,6 +143,7 @@ def draw_game_ui():
 class TestApp(npyscreen.NPSApp):
     def main(self):
         while True:
+            draw_game_ui()
             draw_game_ui()
             return
 
