@@ -108,6 +108,7 @@ class DunkPanel(Entity):
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
 
+
 class VentPanel(Entity):
     def render(self, coords, room):
         return "$$"
@@ -120,16 +121,18 @@ class VentPanel(Entity):
 
         form = npyscreen.Form(name="Vent Panel")
         forms.add_standard_handlers(form)
-        reactor.v_change = form.add_widget(
-            npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent"
-        )
+        reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent")
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
 
+
 class ReactorPart(Entity):
     def render(self, coords, room):
         return "↑↑"
+
+    def interact(self, game, coords, room):
+        npyscreen.notify_confirm(f"The reactor glows ominously.\nCurrent temperature: {game.reactor.temp}")
 
 
 class Door(Entity):

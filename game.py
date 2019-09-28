@@ -26,7 +26,11 @@ class TimeDisplay:
         self.locy = 0
 
     def text(self):
-        return f"{game.time:04d}"
+        h = int(game.time / 100)
+        m = int((game.time - (h * 100)) / 10)
+        s = int(game.time - (m * 10 + h * 100))
+
+        return f"{h:01d}:{m:01d}:{s:01d}"
 
 
 class HP:
@@ -37,7 +41,6 @@ class HP:
 def travel_time():
     # Adjust this as necessary for travel time between rooms?
     game.time = game.time + 0.25
-    TimeDisplay.label = f"TIME: {game.time:4.0f}"
 
 
 def minor_action_time():
@@ -161,6 +164,9 @@ def title_card():
  F          =   INTERACT/USE/ENTER
  ESC        =   EXIT
  WSAD/↑↓←→  =   MOVE
+ 
+ you wake up and everything's gone to frick
+ todo fix this text
 """
     # TODO: make Q work consistently
     form.add_widget(npyscreen.MultiLineEdit, editable=False, value=title_text)
@@ -185,7 +191,7 @@ class TestApp(npyscreen.NPSApp):
     def main(self):
         title_card()
         last_time = 0
-        while game.good_end == None:
+        while True:
             minor_action_time()
             draw_game_ui()
 

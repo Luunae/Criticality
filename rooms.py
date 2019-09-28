@@ -17,6 +17,7 @@ def make_rooms():
     hallway.empty([3, 9])
     hallway.contents[0][1] = hallway_north_door = items.Door()
     hallway.contents[8][1] = hallway_south_door = items.Door()
+    hallway.contents[4][0] = hallway_west_door = items.Door()
 
     # TODO randomly link rooms together
     reactor_room = room.Room()
@@ -24,6 +25,9 @@ def make_rooms():
     reactor_room.empty([9, 9])
     reactor_room.contents[0][3] = reactor_door = items.Door()
     reactor_room.contents[3][3] = items.ReactorPart()
+    reactor_room.contents[4][3] = items.ReactorPart()
+    reactor_room.contents[3][4] = items.ReactorPart()
+    reactor_room.contents[4][4] = items.ReactorPart()
     reactor_room.contents[4][4] = box = items.Box()
     reactor_room.contents[5][4] = items.VentPanel()
     box.inv.append(items.HealthPack())
@@ -37,10 +41,16 @@ def make_rooms():
     box.inv.append(items.HealthPack())
     box.inv.append(items.Crowbar())
 
+    control_rod_room = room.Room()
+    control_rod_room.name = "Control Rod Access"
+    control_rod_room.empty([4, 5])
+    control_rod_room.contents[2][3] = control_rod_door = items.Door()
+
     # TODO: make more rooms
 
     link_doors(hallway, hallway_south_door, reactor_room, reactor_door)
     link_doors(hallway, hallway_north_door, observation_room, observation_door)
+    link_doors(hallway, hallway_west_door, control_rod_room, control_rod_door)
 
     rooms.append(reactor_room)
     rooms.append(hallway)
