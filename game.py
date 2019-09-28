@@ -5,70 +5,26 @@ from typing import List, Any
 
 import npyscreen
 
-from items import *
+from items import PCInventory
+from rooms import make_rooms
 
 GAME_NAME: str = "Allonsy"
-game_time = 0
-
-
-class Room:
-    contents: List[List[Any]]
-
-    def __init__(self):
-        self.contents = [[]]
-        self.name = "FIXME"
-
-    def empty(self, dims):
-        self.contents = [[None for _ in range(0, dims[0])] for _ in range(0, dims[1])]
-        for y in range(0, dims[1]):
-            self.contents[y][0] = Wall()
-            self.contents[y][dims[0] - 1] = Wall()
-
-        for x in range(0, dims[0]):
-            self.contents[0][x] = Wall()
-            self.contents[dims[1] - 1][x] = Wall()
-
-    def render(self):
-        result = ""
-        for y, row in enumerate(self.contents):
-            for x, thing in enumerate(row):
-                result += " "
-                if thing:
-                    rendered = thing.render([x, y], self)
-                    if len(rendered) == 1:
-                        result += " "
-                    result += rendered
-                else:
-                    result += "  "
-            result += "\n"
-        return result
-
-    def get(self, coords):
-        if 0 <= coords[1] < len(self.contents) and 0 <= coords[0] < len(self.contents[0]):
-            return self.contents[coords[1]][coords[0]]
-        return None
 
 
 class TimeDisplay:
     def __init__(self):
-        global game_time
-        self.time = game_time
         # Intent of the following is to provide x,y location for the time portion of the HUD
         # TODO: fill the rest out
         self.locx = 0
         self.locy = 0
-        self.label = f"TIME: {game_time:4.0f}"
 
-
-td = TimeDisplay()
+    def text(self):
+        return f"TIME: {game.time:4.0f}"
 
 
 class HP:
     def __init__(self):
         consequences = []
-
-
-hp = HP()
 
 
 def travel_time():
@@ -90,17 +46,25 @@ def major_action_time():
     game_time = game_time + 5
 
 
-def make_rooms():
-    rooms = []
+class Game:
+    def __init__(self):
+        self.inv = PCInventory()
+        self.rooms = make_rooms()
+        self.active_room = self.rooms[0]
+        self.hp = HP()
+        self.time = 0
+        self.td = TimeDisplay()
 
-    # TODO randomly link rooms together
-    reactor_room = Room()
-    reactor_room.name = "Reactor Room"
-    reactor_room.empty([9, 9])
-    reactor_room.contents[0][3] = Door()
-    rooms.append(reactor_room)
+        self.top_bar = None
+        self.map = None
 
-    return rooms
+    def setup_form(self, form):
+        self.top_bar = form.add(npyscreen.TitleFixedText)
+        self.map = form.add(npyscreen.MultiLineEdit, max_height=10)
+
+    def update(self):
+        self.top_bar.set_value(f"{game.td.text()}\tLOCATION: {game.active_room.name}")
+        self.map.value = f"{game.active_room.render()}"
 
 
 class MainMenu(npyscreen.FormWithMenus):
@@ -111,26 +75,23 @@ class MainMenu(npyscreen.FormWithMenus):
         self.m3 = None
 
     def create(self):
-        self.add(npyscreen.TitleText, name = "Text:", value= "just some text?")
+        self.add(npyscreen.TitleText, name="Text:", value="just some text?")
         self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
-
         # This bit supposedly creates menus
         self.m1 = self.add_menu(name="Main Menu", shortcut="^M")
-        self.m1.addItemsFromList([
-            ("Display Text", self.when_display_text, None, None, ("Time might go here?",)),
-            ("Just Beep", self.when_just_beep, "e"),
-            ("Exit Menu", self.exit_application, "exit?"),
-        ])
+        self.m1.addItemsFromList(
+            [
+                ("Display Text", self.when_display_text, None, None, ("Time might go here?",)),
+                ("Just Beep", self.when_just_beep, "e"),
+                ("Exit Menu", self.exit_application, "exit?"),
+            ]
+        )
 
-        self.m2 = self.add_menu(name="Another Menu", shortcut="b",)
-        self.m2.addItemsFromList([
-            ("Just Beep", self.when_just_beep),
-        ])
+        self.m2 = self.add_menu(name="Another Menu", shortcut="b")
+        self.m2.addItemsFromList([("Just Beep", self.when_just_beep)])
 
         self.m3 = self.m2.addNewSubmenu("A sub menu", "^F")
-        self.m3.addItemsFromList([
-            ("Just Beep", self.when_just_beep),
-        ])
+        self.m3.addItemsFromList([("Just Beep", self.when_just_beep)])
 
     def when_display_text(self, argument):
         npyscreen.notify_confirm(argument)
@@ -143,6 +104,8 @@ class MainMenu(npyscreen.FormWithMenus):
         self.parentApp.setNextForm(None)
         self.editing = False
         self.parentApp.switchFormNow()
+
+
 # def open_menu():
 #     # TODO: Draw menu
 #     # Inventory, Status, Notes, Hint(s?), Current Progress
@@ -155,17 +118,16 @@ def interact():
     pass
 
 
-inv = PCInventory()
-active_room = make_rooms()[0]
+game = Game()
 
 
 def draw_game_ui():
-    # form = MainMenu()
     npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
-    form = npyscreen.Form(name=f"Welcome to {GAME_NAME}", ok_button=True, DEFAULT_LINES=0, DEFAULT_COLUMNS=0)
-    time = form.add(npyscreen.TitleText, name=f"Time: {td.label}\tLocation: {active_room.name}")
-    # ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
-    form.add_handlers({curses.ascii.ESC: lambda x: exit(1), "^N": lambda x: exit(2)})
+    form = MainMenu(name=f"Welcome to {GAME_NAME}", minimum_columns=40, minimum_lines=20)
+
+    game.setup_form(form)
+    game.update()
+
     form.edit()
 
 
@@ -174,13 +136,6 @@ class TestApp(npyscreen.NPSApp):
         while True:
             draw_game_ui()
             return
-            # input = getch()
-
-            # if input == b'\x1b':
-            #    return
-
-            # import time
-            # time.sleep(0.1)
 
 
 if __name__ == "__main__":
