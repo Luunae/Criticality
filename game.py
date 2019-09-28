@@ -44,9 +44,7 @@ class Room:
         return result
 
     def get(self, coords):
-        if 0 <= coords[1] < len(self.contents) and 0 <= coords[0] < len(
-                self.contents[0]
-        ):
+        if 0 <= coords[1] < len(self.contents) and 0 <= coords[0] < len(self.contents[0]):
             return self.contents[coords[1]][coords[0]]
         return None
 
@@ -105,8 +103,55 @@ def make_rooms():
     return rooms
 
 
+class MainMenu(npyscreen.FormWithMenus):
+    def __init__(self, *args, **keywords):
+        super().__init__(*args, **keywords)
+        self.m1 = None
+        self.m2 = None
+        self.m3 = None
+
+    def create(self):
+        self.add(npyscreen.TitleText, name = "Text:", value= "just some text?")
+        self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
+
+        # This bit supposedly creates menus
+        self.m1 = self.add_menu(name="Main Menu", shortcut="^M")
+        self.m1.addItemsFromList([
+            ("Display Text", self.when_display_text, None, None, ("Time might go here?",)),
+            ("Just Beep", self.when_just_beep, "e"),
+            ("Exit Menu", self.exit_application, "exit?"),
+        ])
+
+        self.m2 = self.add_menu(name="Another Menu", shortcut="b",)
+        self.m2.addItemsFromList([
+            ("Just Beep", self.when_just_beep),
+        ])
+
+        self.m3 = self.m2.addNewSubmenu("A sub menu", "^F")
+        self.m3.addItemsFromList([
+            ("Just Beep", self.when_just_beep),
+        ])
+
+    def when_display_text(self, argument):
+        npyscreen.notify_confirm(argument)
+
+    def when_just_beep(self):
+        curses.beep()
+
+    def exit_application(self):
+        curses.beep()
+        self.parentApp.setNextForm(None)
+        self.editing = False
+        self.parentApp.switchFormNow()
+# def open_menu():
+#     # TODO: Draw menu
+#     # Inventory, Status, Notes, Hint(s?), Current Progress
+#     pass
+
+
 def interact():
-    # Door (open, closed, locked)
+    # TODO: Door (open, closed, locked), Box (open/close?), puzzle(?), communicator(?)
+    # main menu/individual menus?
     pass
 
 
@@ -115,20 +160,20 @@ active_room = make_rooms()[0]
 
 
 def draw_game_ui():
-    npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
-    form = npyscreen.Form(
-        name=f"Welcome to {GAME_NAME}", ok_button=True,
-        DEFAULT_LINES=0, DEFAULT_COLUMNS=0
-    )
-    time = form.add(
-        npyscreen.TitleText, name=f"Time: {td.label}\tLocation: {active_room.name}"
-    )
-    #ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
-    form.add_handlers({
-        curses.ascii.ESC: lambda x: exit(1),
-        "^N": lambda x: exit(2)
-    })
-
+    # npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
+    # form = npyscreen.Form(
+    #     name=f"Welcome to {GAME_NAME}", ok_button=True,
+    #     DEFAULT_LINES=0, DEFAULT_COLUMNS=0
+    # )
+    # time = form.add(
+    #     npyscreen.TitleText, name=f"Time: {td.label}\tLocation: {active_room.name}"
+    # )
+    # #ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
+    # form.add_handlers({
+    #     curses.ascii.ESC: lambda x: exit(1),
+    #     "^N": lambda x: exit(2)
+    # })
+    form = MainMenu()
     form.edit()
 
 
