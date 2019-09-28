@@ -67,7 +67,6 @@ class Game:
         self.room_txt = None
         self.inventory_txt = None
         self.current_form = None
-        self.status = ["fine"]
 
         self.reactor = Reactor()
 
@@ -78,7 +77,7 @@ class Game:
         self.current_form.popup_menu(menu)
 
     def show_status(self):
-        npyscreen.notify_confirm(game.status)
+        npyscreen.notify_confirm(self.reactor.get_statuses())
 
     def setup_form(self, form):
         self.current_form = form
@@ -86,6 +85,7 @@ class Game:
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
+        self.reactor_txt = form.add(npyscreen.MultiLineEdit, editable=False)
         form.before_display = lambda: self.update()
         form.add_handlers({"f": self.handle_interact})
 
@@ -207,9 +207,15 @@ def draw_game_ui():
 class TestApp(npyscreen.NPSApp):
     def main(self):
         title_card()
+        last_time = 0
         while game.good_end == None:
             minor_action_time()
             draw_game_ui()
+
+            for i in range(0, game.time - last_time):
+                game.reactor.auto_changes()
+            last_time = game.time
+
             if game.reactor.temp > 200:
                 game.good_end = 0
 

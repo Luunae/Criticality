@@ -19,3 +19,15 @@ class Reactor:
         self.vent += self.dunk / 50 + self.v_change - self.flux / 40
         self.t_change += 1
         self.temp = self.temp + self.t_change + self.flux / 100 - self.dunk / 210 - self.vent / 180
+
+    def get_statuses(self):
+        return [
+            f"flux:\t\t{self.flux:03.3f}",
+            f"f_change:\t{self.f_change:03.3f}",
+            f"dunk:\t\t{self.dunk:03.3f}",
+            f"d_change:\t{self.d_change:03.3f}",
+            f"vent:\t\t{self.vent:03.3f}",
+            f"v_change:\t{self.v_change:03.3f}",
+            f"temp:\t\t{self.temp:03.3f}",
+            f"t_change:\t{self.t_change:03.3f}",
+        ]
