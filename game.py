@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import curses
+from typing import List, Any
 
 import npyscreen
 
@@ -10,6 +12,8 @@ game_time = 0
 
 
 class Room:
+    contents: List[List[Any]]
+
     def __init__(self):
         self.contents = [[]]
         self.name = "FIXME"
@@ -41,7 +45,7 @@ class Room:
 
     def get(self, coords):
         if 0 <= coords[1] < len(self.contents) and 0 <= coords[0] < len(
-            self.contents[0]
+                self.contents[0]
         ):
             return self.contents[coords[1]][coords[0]]
         return None
@@ -113,13 +117,17 @@ active_room = make_rooms()[0]
 def draw_game_ui():
     npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
     form = npyscreen.Form(
-        name=f"Welcome to {GAME_NAME}", FIX_MINIMUM_SIZE_WHEN_CREATED=True
+        name=f"Welcome to {GAME_NAME}", ok_button=True,
+        DEFAULT_LINES=0, DEFAULT_COLUMNS=0
     )
     time = form.add(
         npyscreen.TitleText, name=f"Time: {td.label}\tLocation: {active_room.name}"
     )
-
-    ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
+    #ml = form.add(npyscreen.MultiLineEdit, value=active_room.render(), max_height=10)
+    form.add_handlers({
+        curses.ascii.ESC: lambda x: exit(1),
+        "^N": lambda x: exit(2)
+    })
 
     form.edit()
 
@@ -129,6 +137,13 @@ class TestApp(npyscreen.NPSApp):
         while True:
             draw_game_ui()
             return
+            #input = getch()
+
+            #if input == b'\x1b':
+            #    return
+
+            #import time
+            #time.sleep(0.1)
 
 
 if __name__ == "__main__":
