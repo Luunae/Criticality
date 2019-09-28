@@ -4,6 +4,7 @@ import curses
 import awful
 from items import *
 from rooms import make_rooms
+from reactor import Reactor
 
 GAME_NAME: str = "Allonsy"
 
@@ -28,21 +29,18 @@ class HP:
 
 def travel_time():
     # Adjust this as necessary for travel time between rooms?
-    global game_time
-    game_time = game_time + 0.25
-    TimeDisplay.label = f"TIME: {game_time:4.0f}"
+    game.time = game.time + 0.25
+    TimeDisplay.label = f"TIME: {game.time:4.0f}"
 
 
 def minor_action_time():
     # Examine, take something from inventory, small interactions
-    global game_time
-    game_time = game_time + 1
+    game.time = game.time + 1
 
 
 def major_action_time():
     # Solve a puzzle?
-    global game_time
-    game_time = game_time + 5
+    game.time = game.time + 5
 
 
 class Game:
@@ -55,9 +53,15 @@ class Game:
         self.time = 0
         self.td = TimeDisplay()
 
+        # display?
         self.top_bar = None
         self.map = None
         self.status = ["fine"]
+
+        self.reactor = Reactor()
+
+        # Variable for end-state
+        self.good_end = None
 
     def show_status(self):
         npyscreen.notify_confirm(game.status)
@@ -167,9 +171,29 @@ def draw_game_ui():
 class TestApp(npyscreen.NPSApp):
     def main(self):
         title_card()
-        while True:
-            game.time += 1
+        while game.good_end == None:
+            minor_action_time()
             draw_game_ui()
+            if game.reactor.temp > 200:
+                game.good_end = 0
+
+            if game.time > 99:
+                if game.reactor.temp < 151:
+                    game.good_end = 1
+
+                else:
+                    game.good_end = 0.5
+
+        if game.good_end == 0:
+            # Bad End
+            pass
+
+        elif game.good_end == 1:
+            # Good End
+            pass
+        else:
+            # sudden death, reinforcements?
+            pass
 
 
 if __name__ == "__main__":
