@@ -1,5 +1,4 @@
 import curses
-
 import npyscreen
 
 
@@ -10,7 +9,7 @@ class Entity:
     def render(self, coords, room):
         raise Exception("TODO")
 
-    def interact(self, coords, room):
+    def interact(self, game, coords, room):
         pass
 
 
@@ -62,6 +61,7 @@ class RightWall(Wall):
 
 class HealthPack(Entity):
     def __init__(self):
+        super().__init__()
         self.name = "Health Pack"
 
     def use_item(self, game):
@@ -73,15 +73,21 @@ class HealthPack(Entity):
 
 class Crowbar(Entity):
     def __init__(self):
-        pass
+        super().__init__()
 
 
 class Box(Entity):
-    def render(self, coords, room):
-        return "XX"
+    def __init__(self):
+        super().__init__()
+        self.inv = []
 
-    def interact(self, coords, room):
-        curses.beep()
+    def render(self, coords, room):
+        return "[]"
+
+    def interact(self, game, coords, room):
+        from menus import create_box_menu
+
+        game.popup_menu(create_box_menu(game, self))
 
 
 class ReactorPart(Entity):

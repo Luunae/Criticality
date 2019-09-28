@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
-import curses
 from typing import Union, List
 
 import awful
+from exceptions import DummyException
 from items import *
 from map import MapWidget
 from room import Room
@@ -66,6 +66,7 @@ class Game:
         self.time_txt = None
         self.room_txt = None
         self.inventory_txt = None
+        self.current_form = None
         self.status = ["fine"]
 
         self.reactor = Reactor()
@@ -73,26 +74,26 @@ class Game:
         # Variable for end-state
         self.good_end = None
 
+    def popup_menu(self, menu):
+        self.current_form.popup_menu(menu)
+
     def show_status(self):
         npyscreen.notify_confirm(game.status)
 
     def setup_form(self, form):
+        self.current_form = form
         self.map = form.add(MapWidget, max_height=10)
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
         form.before_display = lambda: self.update()
-        form.add_handlers({
-            "f": self.handle_interact
-        })
+        form.add_handlers({"f": self.handle_interact})
 
     def handle_interact(self, _arg):
-        x,y = self.map.get_player_coords()
-        item: Entity = self.active_room.get([x,y])
+        x, y = self.map.get_player_coords()
+        item: Entity = self.active_room.get([x, y])
         if item:
-            item.interact([x, y], self.active_room)
-        # npyscreen.notify_confirm("Interaction confirmed!")
-
+            item.interact(game, [x, y], self.active_room)
 
     def update(self):
         self.map.set_room(self.active_room)
@@ -125,10 +126,8 @@ class MainMenu(npyscreen.FormWithMenus):
 
     def create(self):
         self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
-        # This bit supposedly creates menus
-        # Inventory, Status, Notes, Hint(s?), Current Progress
         self.m1 = self.add_menu(name="Inventory", shortcut="i")
-        for inv_item in game.inv:
+        for idx, inv_item in enumerate(game.inv):
 
             def use_inv_item():
                 inv_item.use_item(game)
@@ -187,10 +186,6 @@ def title_card():
 """
     form.add_widget(npyscreen.MultiLineEdit, editable=False, value=title_text)
     form.edit()
-    pass
-
-
-class DummyException(Exception):
     pass
 
 
