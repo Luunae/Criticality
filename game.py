@@ -101,6 +101,11 @@ def make_rooms():
     return rooms
 
 
+def interact():
+    # Door (open, closed, locked)
+    pass
+
+
 inv = PCInventory()
 active_room = make_rooms()[0]
 

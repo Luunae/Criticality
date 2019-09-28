@@ -30,17 +30,24 @@ class PCInventory(Thing):
 
 
 class HealthPack(Thing):
+    def __init__(self):
+        pass
     def rm_consequence(self, consequence):
         if len(consequence) > 0:
             consequence.pop(0)
             # TODO: remove from inventory
 
 
+class Crowbar(Thing):
+    def __init__(self):
+        pass
+
 class Box(Thing):
     def render(self, coords, room):
         return "X"
 
-    inventory = []
+
+inventory = []
 
 
 class Door(Wall):
