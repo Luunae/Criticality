@@ -90,6 +90,7 @@ class Game:
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
         form.before_display = lambda: self.update()
         form.add_handlers({"f": self.handle_interact})
+        form.add_handlers({"e": self.handle_interact})
 
     def handle_interact(self, _arg):
         x, y = self.map.get_player_coords()

@@ -101,13 +101,31 @@ class DunkPanel(Entity):
     def interact(self, game, coords, room):
         form = npyscreen.Form(name="Dunk Panel")
         forms.add_standard_handlers(form)
-        reactor.d_change = form.add_widget(
+        game.reactor.d_change = form.add_widget(
             npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider"
         )
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
 
+class VentPanel(Entity):
+    def render(self, coords, room):
+        return "$$"
+
+    def interact(self, game, coords, room):
+        def vent_max():
+            game.reactor.v_change = 10
+            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.")
+            form.editing = False
+
+        form = npyscreen.Form(name="Vent Panel")
+        forms.add_standard_handlers(form)
+        reactor.v_change = form.add_widget(
+            npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent"
+        )
+        form.edit()
+        # TODO: hook up with game.reactor things? more widgets?
+        # TODO: redraw status window after editing Dunk Panel.
 
 class ReactorPart(Entity):
     def render(self, coords, room):

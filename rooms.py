@@ -24,8 +24,8 @@ def make_rooms():
     reactor_room.empty([9, 9])
     reactor_room.contents[0][3] = reactor_door = items.Door()
     reactor_room.contents[3][3] = items.ReactorPart()
-    reactor_room.contents[3][4] = items.DunkPanel()
     reactor_room.contents[4][4] = box = items.Box()
+    reactor_room.contents[5][4] = items.VentPanel()
     box.inv.append(items.HealthPack())
 
     observation_room = room.Room()
@@ -33,6 +33,7 @@ def make_rooms():
     observation_room.empty([8, 6])
     observation_room.contents[1][1] = box = items.Box()
     observation_room.contents[5][4] = observation_door = items.Door()
+    observation_room.contents[3][4] = items.DunkPanel()
     box.inv.append(items.HealthPack())
     box.inv.append(items.Crowbar())
 
