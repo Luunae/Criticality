@@ -10,6 +10,9 @@ class Entity:
     def render(self, coords, room):
         raise Exception("TODO")
 
+    def interact(self, coords, room):
+        pass
+
 
 class Wall(Entity):
     def __init__(self):
@@ -76,7 +79,8 @@ class Crowbar(Entity):
 class Box(Entity):
     def render(self, coords, room):
         return "XX"
-    def interact(self):
+
+    def interact(self, coords, room):
         curses.beep()
 
 
@@ -85,7 +89,7 @@ class ReactorPart(Entity):
         return "↑↑"
 
 
-class Door(Wall):
+class Door(Entity):
     def render(self, coords, room):
         left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)

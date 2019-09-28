@@ -87,7 +87,12 @@ class Game:
         })
 
     def handle_interact(self, _arg):
-        npyscreen.notify_confirm("Interaction confirmed!")
+        x,y = self.map.get_player_coords()
+        item: Entity = self.active_room.get([x,y])
+        if item:
+            item.interact([x, y], self.active_room)
+        # npyscreen.notify_confirm("Interaction confirmed!")
+
 
     def update(self):
         self.map.set_room(self.active_room)
