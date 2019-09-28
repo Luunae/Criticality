@@ -126,7 +126,7 @@ class MainMenu(npyscreen.FormWithMenus):
         super().display(clear=clear)
 
     def create(self):
-        self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
+        forms.add_standard_handlers(self)
         self.m1 = self.add_menu(name="Inventory", shortcut="i")
         for idx, inv_item in enumerate(game.inv):
 
