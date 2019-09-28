@@ -32,6 +32,7 @@ class PCInventory(Entity):
 class HealthPack(Entity):
     def __init__(self):
         pass
+
     def rm_consequence(self, consequence):
         if len(consequence) > 0:
             consequence.pop(0)
@@ -41,6 +42,7 @@ class HealthPack(Entity):
 class Crowbar(Entity):
     def __init__(self):
         pass
+
 
 class Box(Entity):
     def render(self, coords, room):
