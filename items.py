@@ -1,9 +1,9 @@
-class Thing:
+class Entity:
     def render(self, coords, room):
         raise Exception("TODO")
 
 
-class Wall(Thing):
+class Wall(Entity):
     def render(self, coords, room):
         left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
@@ -24,12 +24,12 @@ class Wall(Thing):
         return "|"
 
 
-class PCInventory(Thing):
+class PCInventory(Entity):
     def __init__(self):
         pass
 
 
-class HealthPack(Thing):
+class HealthPack(Entity):
     def __init__(self):
         pass
     def rm_consequence(self, consequence):
@@ -38,11 +38,11 @@ class HealthPack(Thing):
             # TODO: remove from inventory
 
 
-class Crowbar(Thing):
+class Crowbar(Entity):
     def __init__(self):
         pass
 
-class Box(Thing):
+class Box(Entity):
     def render(self, coords, room):
         return "X"
 
