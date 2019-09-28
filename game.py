@@ -11,7 +11,7 @@ from room import Room
 from rooms import make_rooms
 from reactor import Reactor
 
-GAME_NAME: str = "Allonsy"
+GAME_NAME: str = "Criticality"
 
 awful.bodge_mouse_event(npyscreen.FormWithMenus.OKBUTTON_TYPE)
 
@@ -178,13 +178,19 @@ game = Game()
 def title_card():
     form = MainMenu()
     title_text = r"""
-  _____  ______ __  __  ____    _______ ________   _________ 
- |  __ \|  ____|  \/  |/ __ \  |__   __|  ____\ \ / |__   __|
- | |  | | |__  | \  / | |  | |    | |  | |__   \ V /   | |   
- | |  | |  __| | |\/| | |  | |    | |  |  __|   > <    | |   
- | |__| | |____| |  | | |__| |    | |  | |____ / . \   | |   
- |_____/|______|_|  |_|\____/     |_|  |______/_/ \_\  |_|   
+   _____ _____  _____ _______ _____ _____          _      _____ _________     __
+  / ____|  __ \|_   _|__   __|_   _/ ____|   /\   | |    |_   _|__   __\ \   / /
+ | |    | |__) | | |    | |    | || |       /  \  | |      | |    | |   \ \_/ / 
+ | |    |  _  /  | |    | |    | || |      / /\ \ | |      | |    | |    \   /  
+ | |____| | \ \ _| |_   | |   _| || |____ / ____ \| |____ _| |_   | |     | |   
+  \_____|_|  \_|_____|  |_|  |_____\_____/_/    \_|______|_____|  |_|     |_|   
+ 
+ CONTROLS
+ F          =   INTERACT/USE/ENTER
+ ESC        =   EXIT
+ WSAD/↑↓←→  =   MOVE
 """
+    # TODO: make Q work consistently
     form.add_widget(npyscreen.MultiLineEdit, editable=False, value=title_text)
     form.edit()
     pass
