@@ -48,6 +48,11 @@ class Box(Entity):
         return "X"
 
 
+class ReactorPart(Entity):
+    def render(self, coords, room):
+        return "↑"
+
+
 class Door(Wall):
     def render(self, coords, room):
         left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
