@@ -4,6 +4,8 @@ from typing import Union, List
 
 import awful
 import curses
+
+import forms
 from exceptions import DummyException
 from items import *
 from map import MapWidget
@@ -83,10 +85,9 @@ class Game:
     def setup_form(self, form):
         self.current_form = form
         self.map = form.add(MapWidget, max_height=10)
-        self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
-        self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
-        self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
-        self.reactor_txt = form.add(npyscreen.MultiLineEdit, editable=False)
+        self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:", editable=False)
+        self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
+        self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
         form.before_display = lambda: self.update()
         form.add_handlers({"f": self.handle_interact})
 
@@ -113,8 +114,10 @@ class Game:
 
 
 class MainMenu(npyscreen.FormWithMenus):
-    def __init__(self, name=f"Welcome to {GAME_NAME}", minimum_columns=40, minimum_lines=20, *args, **keywords):
-        super().__init__(name=name, minimum_columns=minimum_columns, minimum_lines=minimum_lines, *args, **keywords)
+    def __init__(self, name=f"Welcome to {GAME_NAME}", minimum_columns=40, minimum_lines=30, *args, **keywords):
+        super().__init__(
+            name=name, minimum_columns=minimum_columns, minimum_lines=minimum_lines, ok_button=False, *args, **keywords
+        )
         self.m1 = None
         self.m2 = None
         self.m3 = None
@@ -154,22 +157,8 @@ class MainMenu(npyscreen.FormWithMenus):
 
     def exit_application(self):
         curses.beep()
-        # self.parentApp.setNextForm(None)
-        # self.parentApp.switchFormNow()
         self.editing = False
         exit(1)
-
-
-# def open_menu():
-#     # TODO: Draw menu
-#
-#     pass
-
-
-def interact():
-    # TODO: Door (open, closed, locked), Box (open/close?), puzzle(?), communicator(?)
-    # main menu/individual menus?
-    pass
 
 
 game = Game()
@@ -193,11 +182,9 @@ def title_card():
     # TODO: make Q work consistently
     form.add_widget(npyscreen.MultiLineEdit, editable=False, value=title_text)
     form.edit()
-    pass
 
 
 def draw_game_ui():
-    npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
     form = MainMenu()
 
     game.setup_form(form)
