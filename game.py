@@ -3,6 +3,7 @@
 from typing import Union, List
 
 import awful
+import menus
 import curses
 
 import forms
@@ -151,15 +152,18 @@ game = Game()
 
 
 def title_card():
-    form = MainMenu()
+    form = MainMenu(minimum_lines=1)
     title_text = r"""
-   _____ _____  _____ _______ _____ _____          _      _____ _________     __
-  / ____|  __ \|_   _|__   __|_   _/ ____|   /\   | |    |_   _|__   __\ \   / /
- | |    | |__) | | |    | |    | || |       /  \  | |      | |    | |   \ \_/ / 
- | |    |  _  /  | |    | |    | || |      / /\ \ | |      | |    | |    \   /  
- | |____| | \ \ _| |_   | |   _| || |____ / ____ \| |____ _| |_   | |     | |   
-  \_____|_|  \_|_____|  |_|  |_____\_____/_/    \_|______|_____|  |_|     |_|   
- 
+   _____ _____  _____ _______ _____ _____          _      _____ _________     __ 
+  / ____|  __ \|_   _|__   __|_   _/ ____|   /\   | |    |_   _|__   __\ \   / / 
+ | |    | |__) | | |    | |    | || |       /  \  | |      | |    | |   \ \_/ /  
+ | |    |  _  /  | |    | |    | || |      / /\ \ | |      | |    | |    \   /   
+ | |____| | \ \ _| |_   | |   _| || |____ / ____ \| |____ _| |_   | |     | |    
+  \_____|_|  \_|_____|  |_|  |_____\_____/_/    \_|______|_____|  |_|     |_|    
+                                                                                 """
+    title_text.strip("\n")
+
+    control_text = r"""
  CONTROLS
  F          =   INTERACT/USE/ENTER
  ESC        =   EXIT
@@ -169,7 +173,24 @@ def title_card():
  todo fix this text
 """
     # TODO: make Q work consistently
-    form.add_widget(npyscreen.MultiLineEdit, editable=False, value=title_text)
+    title: npyscreen.MultiLineEdit = form.add_widget(
+        npyscreen.MultiLineEdit,
+        editable=False,
+        value=title_text,
+        max_height=title_text.count("\n") + 2,
+        color="WARNING",
+        labelColor="WARNING",
+    )
+    form.add_widget(
+        npyscreen.MultiLineEdit, value=control_text, editable=False, max_height=control_text.count("\n") + 2
+    )
+
+    # TODO main menu button positions?
+    form.add_widget(
+        npyscreen.ButtonPress,
+        name="Select Theme",
+        when_pressed_function=lambda: form.popup_menu(menus.create_theme_menu(form)),
+    )
     form.edit()
 
 
