@@ -89,6 +89,8 @@ class MainMenu(npyscreen.FormWithMenus):
             def use_inv_item():
                 inv_item.use_item(game)
 
+                raise DummyException()
+
             self.m1.addItemsFromList([(inv_item.name, use_inv_item)])
 
         self.m1.addItem(text="Status", onSelect=game.show_status, shortcut="s", arguments=None, keywords=None)
@@ -144,6 +146,10 @@ def title_card():
     pass
 
 
+class DummyException(Exception):
+    pass
+
+
 def draw_game_ui():
     npyscreen.Form.FIX_MINIMUM_SIZE_WHEN_CREATED = True
     form = MainMenu()
@@ -151,7 +157,11 @@ def draw_game_ui():
     game.setup_form(form)
     game.update()
 
-    form.edit()
+    try:
+        form.edit()
+    # TODO: less awful way of proceeding to next state?????
+    except DummyException:
+        pass
 
 
 class TestApp(npyscreen.NPSApp):
