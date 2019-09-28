@@ -1,6 +1,7 @@
 from typing import List
-
 import npyscreen
+
+import reactor
 
 
 class Entity:
@@ -75,6 +76,7 @@ class HealthPack(Entity):
 class Crowbar(Entity):
     def __init__(self):
         super().__init__()
+        self.name = "Crowbar"
 
 
 class Box(Entity):
@@ -91,16 +93,16 @@ class Box(Entity):
         game.popup_menu(create_box_menu(game, self))
 
 
-class TestPanel(Entity):
+class DunkPanel(Entity):
     def render(self, coords, room):
         return "$$"
 
     def interact(self, game, coords, room):
-        form = npyscreen.Form(name="Control Panel")
-        slider_val = form.add_widget(npyscreen.SliderPercent, name="Test Slider")
+        form = npyscreen.Form(name="Dunk Panel")
+        reactor.d_change = form.add_widget(npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider")
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
-
+        # TODO: redraw status window after editing Dunk Panel.
 
 class ReactorPart(Entity):
     def render(self, coords, room):

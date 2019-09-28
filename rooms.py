@@ -1,3 +1,4 @@
+# This is the file to change setup environmental items.
 def link_doors(r_a, d_a, r_b, d_b):
     d_a.target_room = r_b
     d_a.target_coords = r_b.location_of(d_b)
@@ -23,6 +24,7 @@ def make_rooms():
     reactor_room.empty([9, 9])
     reactor_room.contents[0][3] = reactor_door = items.Door()
     reactor_room.contents[3][3] = items.ReactorPart()
+    reactor_room.contents[3][4] = items.DunkPanel()
     reactor_room.contents[4][4] = box = items.Box()
     box.inv.append(items.HealthPack())
 
@@ -30,9 +32,9 @@ def make_rooms():
     observation_room.name = "Observation Room"
     observation_room.empty([8, 6])
     observation_room.contents[1][1] = box = items.Box()
-    observation_room.contents[3][1] = items.TestPanel()
     observation_room.contents[5][4] = observation_door = items.Door()
     box.inv.append(items.HealthPack())
+    box.inv.append(items.Crowbar())
 
     # TODO: make more rooms
 
