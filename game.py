@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import curses
+from typing import Union
+
 import awful
 from items import *
+from map import MapWidget
 from rooms import make_rooms
 from reactor import Reactor
 
@@ -19,7 +22,7 @@ class TimeDisplay:
         self.locy = 0
 
     def text(self):
-        return f"TIME: {game.time:4.0f}"
+        return f"{game.time:04d}"
 
 
 class HP:
@@ -44,18 +47,22 @@ def major_action_time():
 
 
 class Game:
+    map: Union[None, MapWidget]
+
     def __init__(self):
         # state of various entities/room thingies
         self.inv = [HealthPack()]
         self.rooms = make_rooms()
+        self.player_coords = [4, 4]
         self.active_room = self.rooms[0]
         self.hp = HP()
         self.time = 0
         self.td = TimeDisplay()
 
-        # display?
-        self.top_bar = None
         self.map = None
+        self.time_txt = None
+        self.room_txt = None
+        self.inventory_txt = None
         self.status = ["fine"]
 
         self.reactor = Reactor()
@@ -67,13 +74,25 @@ class Game:
         npyscreen.notify_confirm(game.status)
 
     def setup_form(self, form):
-        self.top_bar = form.add(npyscreen.TitleFixedText)
-        self.map = form.add(npyscreen.MultiLineEdit, max_height=10)
-        form.add(npyscreen.TitleText, name="Room:", value="set this to roomLoc")
+        self.map = form.add(MapWidget, max_height=10)
+        self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
+        self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
+        self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
 
     def update(self):
-        self.top_bar.set_value(f"{game.td.text()}\tLOCATION: {game.active_room.name}")
-        self.map.value = f"{game.active_room.render()}"
+        self.map.value = self.active_room.render()
+        if self.map.cursorx and self.map.cursory:
+            self.player_coords = [int(self.map.cursorx / 2), self.map.cursory]
+
+        self.time_txt.set_value(f"{self.td.text()}")
+        self.inventory_txt.set_value(f"{len(self.inv)} item(s)")
+
+        new_cursor_position = (
+            self.player_coords[1] * (len(self.active_room.contents[0]) * 2 + 1) + self.player_coords[0] * 2
+        )
+        if new_cursor_position != self.map.cursor_position - 1:
+            self.map.cursor_position = new_cursor_position
+        self.room_txt.set_value(f"{self.active_room.name} ({self.player_coords})")
 
 
 class MainMenu(npyscreen.FormWithMenus):
@@ -159,13 +178,17 @@ def draw_game_ui():
     form = MainMenu()
 
     game.setup_form(form)
+
     game.update()
+    form.while_editing = lambda x: game.update()
 
     try:
         form.edit()
     # TODO: less awful way of proceeding to next state?????
     except DummyException:
         pass
+
+    game.update()
 
 
 class TestApp(npyscreen.NPSApp):

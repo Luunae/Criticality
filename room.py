@@ -30,7 +30,6 @@ class Room:
         result = ""
         for y, row in enumerate(self.contents):
             for x, thing in enumerate(row):
-                result += " "
                 if thing:
                     rendered = thing.render([x, y], self)
                     if len(rendered) == 1:
