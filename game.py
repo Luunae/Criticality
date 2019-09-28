@@ -83,7 +83,7 @@ class Game:
         self.current_form.popup_menu(menu)
 
     def show_status(self):
-        npyscreen.notify_confirm(self.reactor.get_statuses())
+        npyscreen.notify_confirm(self.reactor.get_statuses(), editw=1)
 
     def setup_form(self, form):
         self.current_form = form

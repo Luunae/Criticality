@@ -28,7 +28,7 @@ def make_rooms():
     reactor_room.contents[4][3] = items.ReactorPart()
     reactor_room.contents[3][4] = items.ReactorPart()
     reactor_room.contents[4][4] = items.ReactorPart()
-    reactor_room.contents[4][4] = box = items.Box()
+    reactor_room.contents[4][5] = box = items.Box()
     reactor_room.contents[5][4] = items.VentPanel()
     box.inv.append(items.HealthPack())
 

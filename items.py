@@ -71,7 +71,7 @@ class HealthPack(Entity):
         if len(game.hp.consequences) > 0:
             game.hp.consequences.pop(0)
         game.inv.remove(self)
-        npyscreen.notify_confirm("Removed a consequence!")
+        npyscreen.notify_confirm("Removed a consequence!", editw=1)
 
 
 class Crowbar(Entity):
@@ -101,10 +101,12 @@ class DunkPanel(Entity):
     def interact(self, game, coords, room):
         form = npyscreen.Form(name="Dunk Panel")
         forms.add_standard_handlers(form)
-        game.reactor.d_change = form.add_widget(
-            npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider"
+        temp = form.add_widget(
+            npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider",
+            value=int(game.reactor.d_change)
         )
         form.edit()
+        game.reactor.d_change = temp.value
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
 
@@ -116,7 +118,7 @@ class VentPanel(Entity):
     def interact(self, game, coords, room):
         def vent_max():
             game.reactor.v_change = 10
-            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.")
+            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
             form.editing = False
 
         form = npyscreen.Form(name="Vent Panel")
@@ -124,7 +126,7 @@ class VentPanel(Entity):
         reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent")
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
-        # TODO: redraw status window after editing Dunk Panel.
+        # TODO: redraw status window after editing Vent Panel.
 
 
 class ReactorPart(Entity):
@@ -132,7 +134,7 @@ class ReactorPart(Entity):
         return "↑↑"
 
     def interact(self, game, coords, room):
-        npyscreen.notify_confirm(f"The reactor glows ominously.\nCurrent temperature: {game.reactor.temp}")
+        npyscreen.notify_confirm(f"The reactor glows ominously.\nCurrent temperature: {game.reactor.temp}", editw=1)
 
 
 class Door(Entity):
