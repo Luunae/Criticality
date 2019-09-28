@@ -47,6 +47,8 @@ class MapWidget(npyscreen.MultiLineEdit):
             super().h_cursor_right(input)
 
     def set_room(self, room):
+        if room != self.room:
+            self.cursorx = self.cursory = None
         self.room = room
         self.value = room.render()
 

@@ -30,6 +30,8 @@ class Room:
         """
         result = ""
         for y, row in enumerate(self.contents):
+            if y != 0:
+                result += "\n"
             for x, thing in enumerate(row):
                 if thing:
                     rendered = thing.render([x, y], self)
@@ -38,8 +40,14 @@ class Room:
                     result += rendered
                 else:
                     result += "  "
-            result += "\n"
         return result
+
+    def location_of(self, entity):
+        for y, row in enumerate(self.contents):
+            for x, thing in enumerate(row):
+                if thing == entity:
+                    return [x, y]
+        return None
 
     def get(self, coords):
         """

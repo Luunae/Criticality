@@ -3,6 +3,7 @@
 from typing import Union, List
 
 import awful
+import curses
 from exceptions import DummyException
 from items import *
 from map import MapWidget

@@ -1,4 +1,5 @@
-import curses
+from typing import List
+
 import npyscreen
 
 
@@ -90,12 +91,39 @@ class Box(Entity):
         game.popup_menu(create_box_menu(game, self))
 
 
+class TestPanel(Entity):
+    def render(self, coords, room):
+        return "$$"
+
+    def interact(self, game, coords, room):
+        form = npyscreen.Form(name="Control Panel")
+        slider_val = form.add_widget(npyscreen.SliderPercent, name="Test Slider")
+        form.edit()
+        # TODO: hook up with game.reactor things? more widgets?
+
+
 class ReactorPart(Entity):
     def render(self, coords, room):
         return "↑↑"
 
 
 class Door(Entity):
+    target_coords: List[int]
+    target_room: "Room"
+
+    def __init__(self):
+        super().__init__()
+        self.target_coords = []
+        self.target_room = None
+
+    def interact(self, game, coords, room):
+        game.active_room = self.target_room
+        game.player_coords = self.target_coords
+
+        from exceptions import DummyException
+
+        raise DummyException()
+
     def render(self, coords, room):
         left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
