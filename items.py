@@ -1,6 +1,7 @@
 from typing import List
 import npyscreen
 
+import forms
 import reactor
 
 
@@ -100,10 +101,13 @@ class DunkPanel(Entity):
     def interact(self, game, coords, room):
         form = npyscreen.Form(name="Dunk Panel")
         forms.add_standard_handlers(form)
-        reactor.d_change = form.add_widget(npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider")
+        reactor.d_change = form.add_widget(
+            npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider"
+        )
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
+
 
 class ReactorPart(Entity):
     def render(self, coords, room):

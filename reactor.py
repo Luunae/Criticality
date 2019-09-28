@@ -36,5 +36,6 @@ class Reactor:
             f"t_change:\t{self.t_change:03.3f}",
         ]
 
+
 def constrain(val, min_val, max_val):
     return min(max_val, max(min_val, val))

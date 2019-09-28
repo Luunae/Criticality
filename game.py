@@ -129,7 +129,7 @@ class MainMenu(npyscreen.FormWithMenus):
         super().display(clear=clear)
 
     def create(self):
-        forms.add_standard_handlers(self)
+        forms.add_standard_handlers(self, quit=True)
         self.m1 = self.add_menu(name="Inventory", shortcut="i")
         for idx, inv_item in enumerate(game.inv):
 
@@ -141,24 +141,6 @@ class MainMenu(npyscreen.FormWithMenus):
             self.m1.addItemsFromList([(inv_item.name, use_inv_item)])
 
         self.m1.addItem(text="Status", onSelect=game.show_status, shortcut="s", arguments=None, keywords=None)
-        # self.m1 = self.add_menu(name="Status", shortcut="s")
-        # self.m1 = self.addItemsFromList(
-        #     [game.status]
-        # )
-
-        # self.m3 = self.m2.addNewSubmenu("A sub menu", "^F")
-        # self.m3.addItemsFromList([("Just Beep", self.when_just_beep)])
-
-    def when_display_text(self, argument):
-        npyscreen.notify_confirm(argument)
-
-    def when_just_beep(self):
-        curses.beep()
-
-    def exit_application(self):
-        curses.beep()
-        self.editing = False
-        exit(1)
 
 
 game = Game()

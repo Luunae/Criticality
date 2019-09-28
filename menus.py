@@ -15,4 +15,3 @@ def create_box_menu(game, box):
 
         menu.addItem(text=item.name, onSelect=handle_selection, shortcut=None, arguments=None, keywords=None)
     return menu
-
