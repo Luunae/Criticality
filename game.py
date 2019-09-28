@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import curses
-from typing import Union
+from typing import Union, List
 
 import awful
 from items import *
 from map import MapWidget
+from room import Room
 from rooms import make_rooms
 from reactor import Reactor
 
@@ -47,6 +48,8 @@ def major_action_time():
 
 
 class Game:
+    rooms: List[Room]
+    active_room: Room
     map: Union[None, MapWidget]
 
     def __init__(self):
@@ -78,6 +81,7 @@ class Game:
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
+        form.before_display = lambda: self.update()
         form.add_handlers({
             "f": self.handle_interact
         })
@@ -86,9 +90,9 @@ class Game:
         npyscreen.notify_confirm("Interaction confirmed!")
 
     def update(self):
-        self.map.value = self.active_room.render()
+        self.map.set_room(self.active_room)
         if self.map.cursorx and self.map.cursory:
-            self.player_coords = [int(self.map.cursorx / 2), self.map.cursory]
+            self.player_coords = self.map.get_player_coords()
 
         self.time_txt.set_value(f"{self.td.text()}")
         self.inventory_txt.set_value(f"{len(self.inv)} item(s)")
@@ -107,6 +111,12 @@ class MainMenu(npyscreen.FormWithMenus):
         self.m1 = None
         self.m2 = None
         self.m3 = None
+        self.before_display = None
+
+    def display(self, clear=False):
+        if self.before_display:
+            self.before_display()
+        super().display(clear=clear)
 
     def create(self):
         self.how_exited_handers[npyscreen.wgwidget.EXITED_ESCAPE] = self.exit_application
@@ -184,9 +194,6 @@ def draw_game_ui():
     form = MainMenu()
 
     game.setup_form(form)
-
-    game.update()
-    form.while_editing = lambda x: game.update()
 
     try:
         form.edit()

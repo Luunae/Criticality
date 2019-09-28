@@ -4,11 +4,18 @@ import npyscreen
 
 
 class Entity:
+    def __init__(self):
+        self.traversable = True
+
     def render(self, coords, room):
         raise Exception("TODO")
 
 
 class Wall(Entity):
+    def __init__(self):
+        super().__init__()
+        self.traversable = False
+
     def render(self, coords, room):
         left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
@@ -27,6 +34,27 @@ class Wall(Entity):
         if left or right:
             return "──"
         return "|"
+
+
+class RightWall(Wall):
+    def render(self, coords, room):
+        left = isinstance(room.get([coords[0] - 1, coords[1]]), Wall)
+        right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
+        top = isinstance(room.get([coords[0], coords[1] + 1]), Wall)
+        bottom = isinstance(room.get([coords[0], coords[1] - 1]), Wall)
+        if left:
+            if bottom:
+                return "┘ "
+            if top:
+                return "┐ "
+        if right:
+            if bottom:
+                return "└"
+            if top:
+                return "┌"
+        if left or right:
+            return "──"
+        return "| "
 
 
 class HealthPack(Entity):
