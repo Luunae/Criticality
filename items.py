@@ -1,3 +1,5 @@
+import curses
+
 import npyscreen
 
 
@@ -45,12 +47,14 @@ class Crowbar(Entity):
 
 class Box(Entity):
     def render(self, coords, room):
-        return "X"
+        return "XX"
+    def interact(self):
+        curses.beep()
 
 
 class ReactorPart(Entity):
     def render(self, coords, room):
-        return "↑"
+        return "↑↑"
 
 
 class Door(Wall):

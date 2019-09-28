@@ -78,6 +78,12 @@ class Game:
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:")
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:")
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc")
+        form.add_handlers({
+            "f": self.handle_interact
+        })
+
+    def handle_interact(self, _arg):
+        npyscreen.notify_confirm("Interaction confirmed!")
 
     def update(self):
         self.map.value = self.active_room.render()

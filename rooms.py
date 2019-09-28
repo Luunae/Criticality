@@ -10,6 +10,7 @@ def make_rooms():
     reactor_room.empty([9, 9])
     reactor_room.contents[0][3] = room.Door()
     reactor_room.contents[3][3] = items.ReactorPart()
+    reactor_room.contents[4][4] = items.Box()
     rooms.append(reactor_room)
 
     return rooms
