@@ -9,9 +9,9 @@ def create_box_menu(game, box):
     menu = NewMenu(name="Box Inventory")
     for idx, item in enumerate(box.inv):
 
-        def handle_selection():
-            box.inv.remove(item)
-            game.inv.append(item)
+        def handle_selection(it=item):
+            box.inv.remove(it)
+            game.inv.append(it)
 
             raise DummyException()
 
