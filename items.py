@@ -140,6 +140,24 @@ class VentPanel(Entity):
         # TODO: redraw status window after editing Vent Panel.
 
 
+class FluxPanel(Entity):
+    def render(self, coords, room):
+        return "$$"
+
+    def interact(self, game, coords, room):
+        # def TODO():
+        #     game.reactor.v_change = 10
+        #     npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
+        #     form.editing = False
+
+        form = npyscreen.Form(name="Flux Panel")
+        forms.add_standard_handlers(form)
+        reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=TODO, name="Flux")
+        form.edit()
+        # TODO: hook up with game.reactor things? more widgets?
+        # TODO: redraw status window after editing Flux Panel.
+
+
 class ReactorPart(Entity):
     def render(self, coords, room):
         return "↑↑"

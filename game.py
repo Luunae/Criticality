@@ -119,7 +119,7 @@ class Game:
 
 
 class MainMenu(npyscreen.FormWithMenus):
-    def __init__(self, name=f"Welcome to {GAME_NAME}", minimum_columns=40, minimum_lines=30, *args, **keywords):
+    def __init__(self, name=f"{GAME_NAME}", minimum_columns=40, minimum_lines=30, *args, **keywords):
         super().__init__(
             name=name, minimum_columns=minimum_columns, minimum_lines=minimum_lines, ok_button=False, *args, **keywords
         )
