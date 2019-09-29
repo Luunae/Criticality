@@ -167,7 +167,8 @@ class VentPanel(Entity):
     def interact(self, game, coords, room):
         def vent_max():
             game.reactor.v_change = 10
-            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
+            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.\n"
+                                     "(v_change = 10, Venting temporarily increased!)", title="Vent", editw=1)
             form.editing = False
 
         form = npyscreen.Popup(name="Vent Panel", color=self.get_color())

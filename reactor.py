@@ -31,7 +31,7 @@ class Reactor:
             self.thermal_dump + 1 - (self.v_change / 10) - (self.d_change / 10) + (self.f_change / 10)
         ) * coef
         self.t_change = constrain(self.t_change, 0, 10)
-        self.temp += ((self.t_change - 5) + (self.flux / 100) - (self.dunk / 210) - (self.vent / 180)) * coef
+        self.temp += ((self.t_change - 5) + (self.flux / 100) - (self.dunk / 210) - (self.vent / 80)) * coef
         self.air_temp = (self.air_temp * 200 + self.temp - 70) / 201
 
     def get_statuses(self):

@@ -226,8 +226,8 @@ def title_card():
 
     control_text = r"""
  CONTROLS
- F/E        =   INTERACT/USE/OPEN       ↑↓←→/WSAD  =   MOVE
- ESC        =   EXIT                    ENTER/SPACE=   SELECT
+ F/E        =   INTERACT/USE/OPEN       ↑↓←→/WSAD       =   MOVE
+ ESC        =   EXIT                    ENTER/SPACE     =   SELECT
  CTRL + X   =   MENU
 """.lstrip(
         "\n"
