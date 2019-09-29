@@ -17,7 +17,7 @@ def make_rooms():
     hallway.empty([3, 9])
     hallway.contents[0][1] = hallway_north_door = items.Door()
     hallway.contents[8][1] = hallway_south_door = items.Door()
-    hallway.contents[4][0] = hallway_west_door = items.Door()
+    hallway.contents[4][0] = hallway_west_door = items.BlockedDoor()
 
     # TODO randomly link rooms together
     reactor_room = room.Room()

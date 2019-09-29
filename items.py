@@ -1,8 +1,12 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 import npyscreen
 
 import forms
 import reactor
+
+if TYPE_CHECKING:
+    from game import Game
+    from room import Room
 
 
 class Entity:
@@ -192,3 +196,19 @@ class Door(Entity):
         if left or right:
             return "||"
         return "="
+
+
+class BlockedDoor(Door):
+    def interact(self, game: "Game", coords, room: "Room"):
+        if not any([isinstance(x, Crowbar) for x in game.inv]):
+            npyscreen.notify_confirm("This door is jammed. Maybe it could be opened with tools?")
+            return
+
+        npyscreen.notify_confirm("You pry the blocked door open using the Crowbar.", editw=1)
+        idx = room.location_of(self)
+        room.contents[idx[1]][idx[0]] = fixed_door = Door()
+        fixed_door.target_coords = self.target_coords
+        fixed_door.target_room = self.target_room
+
+    def get_color(self):
+        return "CAUTIONHL"

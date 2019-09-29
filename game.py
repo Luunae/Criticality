@@ -137,6 +137,7 @@ class MainMenu(npyscreen.FormWithMenus):
         forms.add_standard_handlers(self, quit=True)
         self.m1 = self.add_menu(name="Inventory", shortcut="i")
         for idx, inv_item in enumerate(game.inv):
+
             def use_inv_item(item=inv_item):
                 item.use_item(game)
 
