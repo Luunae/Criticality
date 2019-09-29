@@ -37,12 +37,18 @@ class Wall(Entity):
             return "┼"
         if left and right and top:
             return "─┬"
+        if left and right and bottom:
+            return "─┴"
         if left:
+            if bottom and top:
+                return "─┤"
             if bottom:
                 return "─┘"
             if top:
                 return "─┐"
         if right:
+            if bottom and top:
+                return "├"
             if bottom:
                 return "└"
             if top:
@@ -63,8 +69,12 @@ class RightWall(Wall):
         bottom = isinstance(room.get([coords[0], coords[1] - 1]), Wall)
         if left and right and top and bottom:
             return "┼"
+        if top and bottom and left:
+            return "┤ "
         if left and right and top:
-            return "┬"
+            return "┬─"
+        if left and right and bottom:
+            return "┴─"
         if left:
             if bottom:
                 return "┘ "
