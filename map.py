@@ -43,13 +43,13 @@ class MapWidget(npyscreen.MultiLineEdit):
     def h_cursor_left(self, input):
         coords = self.get_player_coords()
         block = self.room.get([coords[0] - 1, coords[1]])
-        if not block or block.traversable:
+        if (not block or block.traversable) and coords[0] > 0:
             super().h_cursor_left(input)
 
     def h_cursor_right(self, input):
         coords = self.get_player_coords()
         block = self.room.get([coords[0] + 1, coords[1]])
-        if not block or block.traversable:
+        if (not block or block.traversable) and (coords[0] + 1) < len(self.room.contents[0]):
             super().h_cursor_right(input)
 
     def set_room(self, room):
