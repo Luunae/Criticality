@@ -66,7 +66,6 @@ class Game:
         self.set_map_pos = True
         self.get_map_pos = False
         self.last_time = 0
-        self.last_cursor_pos = None
 
         self.reactor = Reactor()
 
@@ -120,11 +119,8 @@ class Game:
         new_cursor_position = (
             self.player_coords[1] * (len(self.active_room.contents[0]) * 2 + 1) + self.player_coords[0] * 2
         )
-        if self.last_cursor_pos == new_cursor_position + 1:
-            new_cursor_position = self.last_cursor_pos
         if new_cursor_position != self.map.cursor_position - 1:
             self.map.cursor_position = new_cursor_position
-        self.last_cursor_pos = self.map.cursor_position
         self.room_txt.set_value(f"{self.active_room.name} ({self.player_coords})")
 
     def update_reactor(self):
