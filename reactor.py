@@ -13,6 +13,7 @@ class Reactor:
         self.v_change = 5
         self.air_temp = 20
         self.thermal_dump = 0
+        self.control_rod_depth = 0  # TODO use in calculations below
 
     def auto_changes(self, coef):
         self.f_change += (1) * coef

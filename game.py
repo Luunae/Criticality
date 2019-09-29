@@ -145,6 +145,9 @@ class Game:
         self.update()
         self.current_form.display()
 
+    def tiny_action_time(self):
+        self.time += 0.1 * game.damage_rate
+
     def minor_action_time(self):
         # Examine, take something from inventory, small interactions
         self.time += 1 * game.damage_rate

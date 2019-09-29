@@ -181,7 +181,7 @@ class FluxPanel(Entity):
         form = npyscreen.Popup(name="Flux Panel", color=self.get_color())
         forms.add_standard_handlers(form)
         form.add_widget(
-            npyscreen.ButtonPress, when_pressed_function=on_press(), name="Dump Boron Moderator (Reduce flux)"
+            npyscreen.ButtonPress, when_pressed_function=on_press, name="Dump Boron Moderator (Reduce flux)"
         )
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
@@ -189,12 +189,6 @@ class FluxPanel(Entity):
 
     def get_color(self):
         return "STANDOUT"
-
-
-class ControlRod(Entity):
-    # TODO: individual control rod, manual lever
-    # should be slow/expensive in game time to move manually
-    pass
 
 
 class ReactorPart(Entity):
@@ -268,3 +262,32 @@ class LockedDoor(Door):
 
     def get_color(self):
         return "CAUTIONHL"
+
+
+class ControlRod(Entity):
+    def interact(self, game, coords, room):
+        form = npyscreen.Popup(name="Control Rod", color=self.get_color())
+        forms.add_standard_handlers(form)
+        slider: npyscreen.Slider = form.add_widget(
+            npyscreen.Slider, lowest=0, out_of=100, value=game.reactor.control_rod_depth, step=0.25, label="Control Rod"
+        )
+        old_inc = slider.h_increase
+
+        def inc(ch):
+            old_inc(ch)
+            game.minor_action_time()
+            game.update()
+
+        for key, handler in slider.handlers.items():
+            if handler == old_inc:
+                slider.handlers[key] = inc
+        slider.h_increase = inc
+
+        form.edit()
+        game.reactor.control_rod_depth = slider.value
+
+    def render(self, coords, room):
+        return "{}"
+
+    def get_color(self):
+        return "CRITICAL"
