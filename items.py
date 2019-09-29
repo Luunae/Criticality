@@ -98,6 +98,17 @@ class Crowbar(Entity):
         self.name = "Crowbar"
 
 
+class Note(Entity):
+    INSTANCE_COUNT = 0
+
+    def __init__(self):
+        super().__init__()
+        Note.INSTANCE_COUNT += 1
+        self.name = f"Note {Note.INSTANCE_COUNT:02d}"
+        self.text = ""
+        self.description = ""
+
+
 class Box(Entity):
     def __init__(self):
         super().__init__()
@@ -163,7 +174,7 @@ class FluxPanel(Entity):
 
     def interact(self, game, coords, room):
         def on_press():
-            game.reactor.f_change = 10
+            game.reactor.f_change = 0
             npyscreen.notify_confirm("TODO flavour text", title="Flux Moderator", editw=1)
             form.editing = False
 
@@ -244,6 +255,7 @@ class LockedDoor(Door):
             unlocked = menus.key_lock("Security Door", [True, False, True, False, False, False, True, False, False])
             if not unlocked:
                 npyscreen.notify_confirm("You can't open the door, the code is wrong.", editw=1)
+                return
 
         if unlocked:
             npyscreen.notify_confirm("You unlock the door using the code", editw=1)

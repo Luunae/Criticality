@@ -21,7 +21,7 @@ class Reactor:
         self.flux = constrain(self.flux, 0, 1000)
         self.d_change -= (self.flux / 500) * coef
         self.d_change = constrain(self.d_change, 0, 10)
-        self.dunk += ((self.d_change - 5) * 2 - self.f_change * 2) * coef
+        self.dunk += ((self.d_change - 5) * 4 - self.f_change * 2) * coef
         self.dunk = constrain(self.dunk, 0, 1000)
         self.v_change -= (self.dunk / 200) * coef
         self.v_change = constrain(self.v_change, 0, 10)

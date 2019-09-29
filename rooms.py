@@ -56,6 +56,8 @@ def make_rooms():
     reactor_room.contents[4][5] = box = items.Box()
     reactor_room.contents[5][4] = items.VentPanel()
     box.inv.append(items.HealthPack())
+    note = items.Note()
+    note.text = "137"
 
     observation_room = room.Room()
     observation_room.name = "Observation Room"
