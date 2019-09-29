@@ -5,9 +5,15 @@ import npyscreen
 
 
 def patch_all():
+    bodge_menu_defaults()
     bodge_mouse_event(npyscreen.FormWithMenus.OKBUTTON_TYPE)
     bodge_wrap()
     bodge_notify_confirm()
+
+
+def bodge_menu_defaults():
+    from npyscreen.wgNMenuDisplay import HasMenus
+    HasMenus.MENU_KEY = "M"
 
 
 def bodge_notify_confirm():

@@ -71,6 +71,7 @@ class Game:
         self.rad_mult = 1
         self.equipment_txt = None
         self.equipment = []
+        self.hinted = False
 
         self.reactor = Reactor()
 
@@ -115,6 +116,9 @@ class Game:
     def update(self):
         self.update_reactor()
 
+        if self.reactor.temp > 150 and not self.hinted:
+            self.hinted = True
+            npyscreen.notify_confirm("It's getting hot. Maybe I should check PROTOCOLS in the Datapad", editw=1)
         if self.rads > 1000 and len(self.hp.consequences) == 0:
             self.hp.consequences.append("Rad poisoning")
         if self.rads > 5000 and len(self.hp.consequences) == 1:
@@ -182,6 +186,7 @@ class MainMenu(npyscreen.FormBaseNewWithMenus):
         self.m2 = None
         self.m3 = None
         self.before_display = None
+        self.add_handlers({'m': self.root_menu})
 
     def display(self, clear=False):
         if self.before_display:
@@ -238,7 +243,7 @@ def title_card():
  CONTROLS
  F/E        =   INTERACT/USE/OPEN       ↑↓←→/WSAD       =   MOVE
  ESC        =   EXIT                    ENTER/SPACE     =   SELECT
- CTRL + X   =   MENU
+ M          =   MENU
 """.lstrip(
         "\n"
     )
