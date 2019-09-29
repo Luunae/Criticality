@@ -23,7 +23,12 @@ class Entity:
         return "DEFAULT"
 
     def use_item(self, game):
-        npyscreen.notify_confirm("OAK: There's a time and a place for everything! But not now.", editw=1)
+        current_item = game.active_room.get(game.player_coords)
+        if isinstance(current_item, VentPanel):
+            game.active_room.contents[game.player_coords[1]][game.player_coords[0]] = Wall()
+            npyscreen.notify_confirm("You broke the vent panel. Great work!", editw=1)
+        else:
+            npyscreen.notify_confirm("OAK: There's a time and a place for everything! But not now.", editw=1)
 
 
 class Wall(Entity):

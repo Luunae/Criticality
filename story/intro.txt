@@ -1,4 +1,4 @@
 *The ground shudders*
 *An alarm sounds on your datapad with a message*
 
-EMERGENCY: Sudden disturbance in northern tunnel. Reactor stability damaged. Readings fluctuating wildly. Temperature rapidly increasing. Reactor will be supercritical in less than three minutes without intervention. Emergency protocols are available on your datapad.
+EMERGENCY: Sudden disturbance in northern tunnel. Reactor stability damaged. Readings fluctuating wildly. Temperature rapidly increasing. Reactor will be supercritical in less than three minutes without intervention. Emergency PROTOCOLS are available on your Datapad.
