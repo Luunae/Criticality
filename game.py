@@ -52,7 +52,7 @@ class Game:
         self.player_coords = [1, 1]
         self.active_room = self.rooms[0]
         self.hp = HP()
-        self.damage_rate = len(self.hp.consequences)*.2
+        self.damage_rate = len(self.hp.consequences) * 0.2
         self.time = 0
         self.rads = 0
         self.td = TimeDisplay()
@@ -291,7 +291,6 @@ def draw_game_ui():
 
 
 def main_loop():
-    last_time = 0
     while True:
         draw_game_ui()
 

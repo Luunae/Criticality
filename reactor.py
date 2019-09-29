@@ -26,7 +26,9 @@ class Reactor:
         self.v_change -= (self.dunk / 200) * coef
         self.v_change = constrain(self.v_change, 0, 10)
         self.vent += (self.dunk / 50 + self.v_change - self.flux / 40) * coef
-        self.t_change += (self.thermal_dump + 1 - (self.v_change / 10) - (self.d_change / 10) + (self.f_change / 10)) * coef
+        self.t_change += (
+            self.thermal_dump + 1 - (self.v_change / 10) - (self.d_change / 10) + (self.f_change / 10)
+        ) * coef
         self.t_change = constrain(self.t_change, 0, 10)
         self.temp += ((self.t_change - 5) + (self.flux / 100) - (self.dunk / 210) - (self.vent / 180)) * coef
         self.air_temp = (self.air_temp * 200 + self.temp - 70) / 201

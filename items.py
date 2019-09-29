@@ -234,13 +234,21 @@ class Door(Entity):
         return "="
 
 
-class BlockedDoor(Door):
+class LockedDoor(Door):
     def interact(self, game: "Game", coords, room: "Room"):
+        unlocked = False
         if not any([isinstance(x, Crowbar) for x in game.inv]):
-            npyscreen.notify_confirm("This door is jammed. Maybe it could be opened with tools?")
-            return
+            npyscreen.notify_confirm("This door is locked. Enter the key to open it", editw=1)
+            import menus
 
-        npyscreen.notify_confirm("You pry the blocked door open using the Crowbar.", editw=1)
+            unlocked = menus.key_lock("Security Door", [True, False, True, False, False, False, True, False, False])
+            if not unlocked:
+                npyscreen.notify_confirm("You can't open the door, the code is wrong.", editw=1)
+
+        if unlocked:
+            npyscreen.notify_confirm("You unlock the door using the code", editw=1)
+        else:
+            npyscreen.notify_confirm("You pry the blocked door open using the Crowbar.", editw=1)
         idx = room.location_of(self)
         room.contents[idx[1]][idx[0]] = fixed_door = Door()
         fixed_door.target_coords = self.target_coords
