@@ -109,7 +109,7 @@ class DunkPanel(Entity):
         return "$$"
 
     def interact(self, game, coords, room):
-        form = npyscreen.Form(name="Dunk Panel")
+        form = npyscreen.Popup(name="Dunk Panel", color=self.get_color())
         forms.add_standard_handlers(form)
         temp = form.add_widget(
             npyscreen.Slider,
@@ -125,6 +125,9 @@ class DunkPanel(Entity):
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Dunk Panel.
 
+    def get_color(self):
+        return "CAUTION"
+
 
 class VentPanel(Entity):
     def render(self, coords, room):
@@ -136,12 +139,15 @@ class VentPanel(Entity):
             npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
             form.editing = False
 
-        form = npyscreen.Form(name="Vent Panel")
+        form = npyscreen.Popup(name="Vent Panel", color=self.get_color())
         forms.add_standard_handlers(form)
         reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent")
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Vent Panel.
+
+    def get_color(self):
+        return "LABEL"
 
 
 class FluxPanel(Entity):
@@ -154,12 +160,15 @@ class FluxPanel(Entity):
         #     npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
         #     form.editing = False
 
-        form = npyscreen.Form(name="Flux Panel")
+        form = npyscreen.Popup(name="Flux Panel", color=self.get_color())
         forms.add_standard_handlers(form)
         reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=TODO, name="Flux")
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Flux Panel.
+
+    def get_color(self):
+        return "STANDOUT"
 
 
 class ReactorPart(Entity):
