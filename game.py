@@ -6,9 +6,6 @@ from typing import Union, List
 
 import awful
 import menus
-import curses
-
-import forms
 import themes
 from exceptions import DummyException
 from items import *
@@ -82,7 +79,6 @@ class Game:
         self.air_temp = None
 
         self.reactor = Reactor()
-        self.reactor.thermal_dump = 0
 
         # Variable for end-state
         self.good_end = None
