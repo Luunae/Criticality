@@ -222,6 +222,7 @@ def title_card():
  CONTROLS
  F/E        =   INTERACT/USE/OPEN       ↑↓←→/WSAD  =   MOVE
  ESC        =   EXIT                    ENTER/SPACE=   SELECT
+ CTRL + X   =   MENU
 """.lstrip(
         "\n"
     )
@@ -242,7 +243,7 @@ def title_card():
         npyscreen.Pager, values=[], max_height=form.curses_pad.getmaxyx()[0] - title.height - 3
     )
     intro_pager.values = npyscreen.utilNotify._wrap_message_lines(control_text + "\n" + intro, intro_pager.width - 1)
-    for widget in intro_pager._my_widgets[:3]:
+    for widget in intro_pager._my_widgets[:4]:
         widget.color = "CURSOR"
 
     button_x_gap = 8
