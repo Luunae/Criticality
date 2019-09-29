@@ -19,6 +19,7 @@ class MapWidget(npyscreen.MultiLineEdit):
         del self.handlers["^R"]
         handlers = {"w": self.h_line_up, "s": self.h_line_down, "a": self.h_cursor_left, "d": self.h_cursor_right}
         forms.add_handlers(self, handlers)
+        self.game = None
         self.room = None
         self.cursorx = None
         self.cursory = None
@@ -27,6 +28,7 @@ class MapWidget(npyscreen.MultiLineEdit):
         return [int(x / 2), y]
 
     def get_player_coords(self):
+        self.cursory, self.cursorx = self.translate_cursor(self.cursor_position)
         return [int(self.cursorx / 2), self.cursory]
 
     def h_line_down(self, input):
@@ -34,12 +36,14 @@ class MapWidget(npyscreen.MultiLineEdit):
         block = self.room.get([coords[0], coords[1] + 1])
         if not block or block.traversable:
             super().h_line_down(input)
+            self.game.travel_time()
 
     def h_line_up(self, input):
         coords = self.get_player_coords()
         block = self.room.get([coords[0], coords[1] - 1])
         if not block or block.traversable:
             super().h_line_up(input)
+            self.game.travel_time()
 
     def h_cursor_left(self, input):
         coords = self.get_player_coords()
@@ -47,6 +51,7 @@ class MapWidget(npyscreen.MultiLineEdit):
         half_move = self.cursorx % 2 == 1
         if half_move or ((not block or block.traversable) and coords[0] > 0):
             super().h_cursor_left(input)
+            self.game.travel_time()
 
     def h_cursor_right(self, input):
         coords = self.get_player_coords()
@@ -54,10 +59,9 @@ class MapWidget(npyscreen.MultiLineEdit):
         half_move = self.cursorx % 2 == 0
         if half_move or ((not block or block.traversable) and (coords[0] + 1) < len(self.room.contents[0])):
             super().h_cursor_right(input)
+            self.game.travel_time()
 
     def set_room(self, room):
-        if room != self.room:
-            self.cursorx = self.cursory = None
         self.room = room
         self.value = room.render()
 

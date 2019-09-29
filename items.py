@@ -219,8 +219,7 @@ class Door(Entity):
         self.target_room = None
 
     def interact(self, game, coords, room):
-        game.active_room = self.target_room
-        game.player_coords = self.target_coords
+        game.set_room(self.target_room, self.target_coords)
 
         from exceptions import DummyException
 

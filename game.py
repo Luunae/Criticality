@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 import glob
+from math import floor
 from pathlib import Path
 from typing import Union, List
 
@@ -39,21 +40,6 @@ class HP:
         self.consequences = ["1"]
 
 
-def travel_time():
-    # Adjust this as necessary for travel time between rooms?
-    game.time = game.time + 0.25
-
-
-def minor_action_time():
-    # Examine, take something from inventory, small interactions
-    game.time = game.time + 1
-
-
-def major_action_time():
-    # Solve a puzzle?
-    game.time = game.time + 5
-
-
 class Game:
     rooms: List[Room]
     active_room: Room
@@ -77,6 +63,10 @@ class Game:
         self.radiation_exposure_txt = None
         self.current_form = None
         self.air_temp = None
+        self.set_map_pos = True
+        self.get_map_pos = False
+        self.last_time = 0
+        self.last_cursor_pos = None
 
         self.reactor = Reactor()
 
@@ -92,6 +82,7 @@ class Game:
     def setup_form(self, form):
         self.current_form = form
         self.map = form.add(MapWidget, max_height=10)
+        self.map.game = self
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:", editable=False)
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
@@ -106,10 +97,20 @@ class Game:
         if item:
             item.interact(game, [x, y], self.active_room)
 
+    def set_room(self, room, coords):
+        self.active_room = room
+        self.player_coords = coords
+        self.set_map_pos = True
+        self.map.set_room(room)
+
     def update(self):
+        self.update_reactor()
+
         self.air_temp.value = f"~{int(self.reactor.air_temp / 5) * 5}°C"
         self.map.set_room(self.active_room)
-        if self.map.cursorx and self.map.cursory:
+
+        if self.get_map_pos:
+            self.get_map_pos = False
             self.player_coords = self.map.get_player_coords()
 
         self.time_txt.set_value(f"{self.td.text()}")
@@ -119,9 +120,38 @@ class Game:
         new_cursor_position = (
             self.player_coords[1] * (len(self.active_room.contents[0]) * 2 + 1) + self.player_coords[0] * 2
         )
+        if self.last_cursor_pos == new_cursor_position + 1:
+            new_cursor_position = self.last_cursor_pos
         if new_cursor_position != self.map.cursor_position - 1:
             self.map.cursor_position = new_cursor_position
+        self.last_cursor_pos = self.map.cursor_position
         self.room_txt.set_value(f"{self.active_room.name} ({self.player_coords})")
+
+    def update_reactor(self):
+        time = floor(self.time)
+        for i in range(0, time - self.last_time):
+            self.reactor.auto_changes()
+        self.last_time = time
+
+        if game.reactor.status_percentage() >= 1:
+            # TODO flavor text
+            npyscreen.notify_confirm("The reactor explodes violently.", title="Meltdown", editw=1)
+            exit(0)
+
+    def travel_time(self):
+        # Adjust this as necessary for travel time between rooms?
+        self.time += 0.25
+        self.get_map_pos = True
+        self.update()
+        self.current_form.display()
+
+    def minor_action_time(self):
+        # Examine, take something from inventory, small interactions
+        self.time += 1
+
+    def major_action_time(self):
+        # Solve a puzzle?
+        self.time += 5
 
 
 class MainMenu(npyscreen.FormBaseNewWithMenus):
@@ -146,6 +176,7 @@ class MainMenu(npyscreen.FormBaseNewWithMenus):
 
             def use_inv_item(item=inv_item):
                 item.use_item(game)
+                game.minor_action_time()
 
                 raise DummyException()
 
@@ -262,17 +293,7 @@ def draw_game_ui():
 def main_loop():
     last_time = 0
     while True:
-        minor_action_time()
         draw_game_ui()
-
-        for i in range(0, game.time - last_time):
-            game.reactor.auto_changes()
-        last_time = game.time
-
-        if game.reactor.status_percentage() >= 1:
-            # TODO flavor text
-            npyscreen.notify_confirm("The reactor explodes violently.", title="Meltdown", editw=1)
-            break
 
 
 class TestApp(npyscreen.NPSApp):
