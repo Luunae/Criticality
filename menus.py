@@ -19,17 +19,18 @@ def create_box_menu(game, box):
     return menu
 
 
-def create_theme_menu(form: Form):
-    from themes import themes
+def create_theme_menu(form: Form, button):
+    import themes
     from npyscreen import setTheme, NewMenu
     from npyscreen.proto_fm_screen_area import getTheme
 
     menu = NewMenu(name="Theme Selection")
-    for idx, theme in enumerate(themes):
+    for idx, theme in enumerate(themes.themes):
 
         def select_theme(t=theme):
             setTheme(t)
             form.theme_manager = getTheme()
+            button.name = themes.select_theme_text()
             form.display()
 
         menu.addItem(text=f"{idx:02d} {theme.__name__}", onSelect=select_theme)

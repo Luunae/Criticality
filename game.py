@@ -7,6 +7,7 @@ import menus
 import curses
 
 import forms
+import themes
 from exceptions import DummyException
 from items import *
 from map import MapWidget
@@ -186,11 +187,8 @@ def title_card():
     )
 
     # TODO main menu button positions?
-    form.add_widget(
-        npyscreen.ButtonPress,
-        name="Select Theme",
-        when_pressed_function=lambda: form.popup_menu(menus.create_theme_menu(form)),
-    )
+    theme_button = form.add_widget(npyscreen.ButtonPress, name=themes.select_theme_text())
+    theme_button.when_pressed_function = lambda: form.popup_menu(menus.create_theme_menu(form, theme_button))
     form.edit()
 
 
@@ -210,6 +208,7 @@ def draw_game_ui():
 
 class TestApp(npyscreen.NPSApp):
     def main(self):
+        themes.select_theme()
         title_card()
         last_time = 0
         while True:

@@ -1,4 +1,5 @@
 from npyscreen import Themes, ThemeManager
+from npyscreen.proto_fm_screen_area import getTheme, setTheme
 
 
 class DefaultTheme(ThemeManager):
@@ -27,3 +28,13 @@ class CriticalTheme(ThemeManager):
 
 
 themes = [DefaultTheme, CriticalTheme, Themes.ColorfulTheme, Themes.ElegantTheme]
+
+
+def select_theme_text():
+    return f"Select Theme [{type(getTheme()).__name__}]"
+
+
+def select_theme():
+    import random
+
+    setTheme(random.choice(themes))
