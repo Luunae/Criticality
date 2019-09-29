@@ -22,6 +22,9 @@ class MapWidget(npyscreen.MultiLineEdit):
         self.cursorx = None
         self.cursory = None
 
+    def translate_coords(self, x, y):
+        return [int(x / 2), y]
+
     def get_player_coords(self):
         return [int(self.cursorx / 2), self.cursory]
 
@@ -56,8 +59,103 @@ class MapWidget(npyscreen.MultiLineEdit):
         self.value = room.render()
 
     def update(self, clear=True):
-        # force editing to True while rendering so cursor is shown
-        old = self.editing
-        self.editing = True
-        super().update(clear)
-        self.editing = old
+        if clear:
+            self.clear()
+        display_length = self.maximum_display_height
+        display_width = self.maximum_display_width
+        xdisplay_offset = 0
+        text_to_display = self.get_value_as_list()
+        if self.cursor_position < 0:
+            self.cursor_position = 0
+        if self.cursor_position > len(self.value):
+            self.cursor_position = len(self.value)
+
+        self.cursory, self.cursorx = self.translate_cursor(self.cursor_position)
+
+        if self.editing:
+            if self.slow_scroll:
+                if self.cursory > self.start_display_at + display_length - 1:
+                    self.start_display_at = self.cursory - (display_length - 1)
+
+                if self.cursory < self.start_display_at:
+                    self.start_display_at = self.cursory
+
+            else:
+                if self.cursory > self.start_display_at + (display_length - 1):
+                    self.start_display_at = self.cursory
+
+                if self.cursory < self.start_display_at:
+                    self.start_display_at = self.cursory - (display_length - 1)
+
+            if self.start_display_at < 0:
+                self.start_display_at = 0
+
+            if self.cursorx > display_width:
+                xdisplay_offset = self.cursorx - display_width
+
+        max_display = len(text_to_display[self.start_display_at :])
+
+        for line_counter in range(self.height):
+            if line_counter >= len(text_to_display) - self.start_display_at:
+                break
+
+            line_to_display = text_to_display[self.start_display_at + line_counter][xdisplay_offset:]
+            line_to_display = self.safe_string(line_to_display)
+            if isinstance(line_to_display, bytes):
+                line_to_display = line_to_display.decode(self.encoding, "replace")
+            column = 0
+            place_in_string = 0
+            while column <= (display_width):
+                if not line_to_display:
+                    break
+                if place_in_string >= len(line_to_display):
+                    break
+                width_of_char_to_print = 1  # self.find_width_of_char(string_to_print[place_in_string])
+                # change this when actually have a function to do this
+                if column - 1 + width_of_char_to_print > display_width:
+                    break
+
+                color = "DEFAULT"
+                item = self.room.get(self.translate_coords(column, line_counter))
+
+                if item:
+                    color = item.get_color()
+
+                if self.do_colors():
+                    color = self.parent.theme_manager.findPair(self, request=color)
+                else:
+                    color = curses.A_NORMAL
+
+                self.parent.curses_pad.addstr(
+                    self.rely + line_counter,
+                    self.relx + column,
+                    self._print_unicode_char(line_to_display[place_in_string]),
+                    color,
+                )
+                column += width_of_char_to_print
+                place_in_string += 1
+
+            _cur_y, _cur_x = self.translate_cursor(self.cursor_position)
+
+            try:
+                char_under_cur = self.safe_string(self.value[self.cursor_position])
+                if char_under_cur == "\n":
+                    char_under_cur = " "
+            except:
+                char_under_cur = " "
+
+            if self.do_colors():
+                self.parent.curses_pad.addstr(
+                    self.rely + _cur_y - self.start_display_at,
+                    _cur_x - xdisplay_offset + self.relx,
+                    char_under_cur,
+                    self.parent.theme_manager.findPair(self) | curses.A_STANDOUT,
+                )
+
+            else:
+                self.parent.curses_pad.addstr(
+                    self.rely + _cur_y - self.start_display_at,
+                    _cur_x - xdisplay_offset + self.relx,
+                    char_under_cur,
+                    curses.A_STANDOUT,
+                )

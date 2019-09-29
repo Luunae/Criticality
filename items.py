@@ -15,6 +15,9 @@ class Entity:
     def interact(self, game, coords, room):
         pass
 
+    def get_color(self):
+        return "DEFAULT"
+
 
 class Wall(Entity):
     def __init__(self):
@@ -39,6 +42,9 @@ class Wall(Entity):
         if left or right:
             return "──"
         return "|"
+
+    def get_color(self):
+        return "NO_EDIT"
 
 
 class RightWall(Wall):
@@ -102,8 +108,13 @@ class DunkPanel(Entity):
         form = npyscreen.Form(name="Dunk Panel")
         forms.add_standard_handlers(form)
         temp = form.add_widget(
-            npyscreen.Slider, out_of=10, step=1, lowest=1, label=True, name="Dunk Slider",
-            value=int(game.reactor.d_change)
+            npyscreen.Slider,
+            out_of=10,
+            step=1,
+            lowest=1,
+            label=True,
+            name="Dunk Slider",
+            value=int(game.reactor.d_change),
         )
         form.edit()
         game.reactor.d_change = temp.value
@@ -135,6 +146,9 @@ class ReactorPart(Entity):
 
     def interact(self, game, coords, room):
         npyscreen.notify_confirm(f"The reactor glows ominously.\nCurrent temperature: {game.reactor.temp}", editw=1)
+
+    def get_color(self):
+        return "STANDOUT"
 
 
 class Door(Entity):
