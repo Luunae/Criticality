@@ -102,6 +102,7 @@ class HealthPack(Entity):
         if len(game.hp.consequences) > 0:
             game.hp.consequences.pop(0)
         game.inv.remove(self)
+        game.rads = max(0, game.rads - 1000)
         npyscreen.notify_confirm("Removed a consequence!", editw=1)
 
 
