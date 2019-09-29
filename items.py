@@ -130,8 +130,7 @@ class DunkPanel(Entity):
         )
         form.edit()
         game.reactor.d_change = temp.value
-        # TODO: hook up with game.reactor things? more widgets?
-        # TODO: redraw status window after editing Dunk Panel.
+        # TODO: Make dunk NOT edit when escaping
 
     def get_color(self):
         return "CAUTION"

@@ -87,7 +87,7 @@ def make_rooms():
     control_rod_room.contents[5][4] = items.FluxPanel()
 
     sleeping_quarters = room.Room()
-    sleeping_quarters.contents = control_rod_room.contents = contents_from_text(
+    sleeping_quarters.contents = contents_from_text(
         16,
         r"""
 ################

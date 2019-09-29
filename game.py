@@ -52,6 +52,7 @@ class Game:
         self.player_coords = [1, 1]
         self.active_room = self.rooms[0]
         self.hp = HP()
+        self.damage_rate = len(self.hp.consequences)*.2
         self.time = 0
         self.rads = 0
         self.td = TimeDisplay()
@@ -71,6 +72,9 @@ class Game:
 
         # Variable for end-state
         self.good_end = None
+
+    def change_damage_rate(self, dr):
+        pass
 
     def popup_menu(self, menu):
         self.current_form.popup_menu(menu)
@@ -126,7 +130,7 @@ class Game:
     def update_reactor(self):
         time = floor(self.time)
         for i in range(0, time - self.last_time):
-            self.reactor.auto_changes()
+            self.reactor.auto_changes(0.5)
         self.last_time = time
 
         if game.reactor.status_percentage() >= 1:
@@ -136,18 +140,18 @@ class Game:
 
     def travel_time(self):
         # Adjust this as necessary for travel time between rooms?
-        self.time += 0.25
+        self.time += 1 * game.damage_rate
         self.get_map_pos = True
         self.update()
         self.current_form.display()
 
     def minor_action_time(self):
         # Examine, take something from inventory, small interactions
-        self.time += 1
+        self.time += 1 * game.damage_rate
 
     def major_action_time(self):
         # Solve a puzzle?
-        self.time += 5
+        self.time += 5 * game.damage_rate
 
 
 class MainMenu(npyscreen.FormBaseNewWithMenus):

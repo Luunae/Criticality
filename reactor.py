@@ -14,20 +14,21 @@ class Reactor:
         self.air_temp = 20
         self.thermal_dump = 0
 
-    def auto_changes(self):
-        self.f_change += 1
+    def auto_changes(self, coef):
+        self.f_change += (1) * coef
         self.f_change = constrain(self.f_change, 0, 10)
-        self.flux = self.flux + (self.f_change - 5) * 6
+        self.flux += ((self.f_change - 5) * 6) * coef
         self.flux = constrain(self.flux, 0, 1000)
-        self.d_change -= self.flux / 500
+        self.d_change -= (self.flux / 500) * coef
         self.d_change = constrain(self.d_change, 0, 10)
-        self.dunk = self.dunk + (self.d_change - 5) * 5 - self.f_change * 2
-        self.v_change -= self.dunk / 200
+        self.dunk += ((self.d_change - 5) * 2 - self.f_change * 2) * coef
+        self.dunk = constrain(self.dunk, 0, 1000)
+        self.v_change -= (self.dunk / 200) * coef
         self.v_change = constrain(self.v_change, 0, 10)
-        self.vent += self.dunk / 50 + self.v_change - self.flux / 40
-        self.t_change += self.thermal_dump + 1 - (self.v_change / 10) - (self.d_change / 10) + (self.f_change / 10)
+        self.vent += (self.dunk / 50 + self.v_change - self.flux / 40) * coef
+        self.t_change += (self.thermal_dump + 1 - (self.v_change / 10) - (self.d_change / 10) + (self.f_change / 10)) * coef
         self.t_change = constrain(self.t_change, 0, 10)
-        self.temp = self.temp + (self.t_change - 5) + self.flux / 100 - self.dunk / 210 - self.vent / 180
+        self.temp += ((self.t_change - 5) + (self.flux / 100) - (self.dunk / 210) - (self.vent / 180)) * coef
         self.air_temp = (self.air_temp * 200 + self.temp - 70) / 201
 
     def get_statuses(self):
