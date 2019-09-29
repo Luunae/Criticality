@@ -1,0 +1,13 @@
+EMERGENCY PROTOCOLS
+
+Priority: keep reactor temperature below TODO degrees.
+
+This can be achieved by:
+
+Venting the reactor. Possible only when Flux is low. Lowers temp somewhat.
+
+Dunking the reactor core. Lowers reactor temp, but can only be done so much until the coolant is TODO(filled?). Despite the name, this is when the reactor core is *raised* into a suspended mass of coolant.
+
+Lowering Flux - IF the automated systems are unable to automatically regulate Flux. Contact your superior. Flux automatically raises reactor temperature.
+
+Thermal Dump. Full Dunk followed by Venting the surrounding air AND the coolant. Can only be done once. Last-resort, as this will cause severe-to-extreme dermal blistering.

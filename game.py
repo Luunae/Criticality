@@ -77,6 +77,7 @@ class Game:
         self.current_form = None
 
         self.reactor = Reactor()
+        self.reactor.thermal_dump = 0
 
         # Variable for end-state
         self.good_end = None

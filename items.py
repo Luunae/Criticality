@@ -1,6 +1,6 @@
 from typing import List, TYPE_CHECKING
 import npyscreen
-
+import math
 import forms
 import reactor
 
@@ -176,7 +176,18 @@ class ReactorPart(Entity):
         return "↑↑"
 
     def interact(self, game, coords, room):
-        npyscreen.notify_confirm(f"The reactor glows ominously.\nCurrent temperature: {game.reactor.temp}", editw=1)
+        if game.reactor.thermal_dump == 0 and game.reactor.temp > 130:
+            dump = npyscreen.notify_yes_no(
+                f"The reactor glows ominously.\nCurrent temperature: {math.trunc(game.reactor.temp)}\nDo you want to engage the thermal dump?\n(1 use, -100 degrees)",
+                editw=1
+            )
+            if dump:
+                game.reactor.temp -= 100
+                game.reactor.thermal_dump = 1
+        else:
+            npyscreen.notify_confirm(
+                f"The reactor glows ominously.\nCurrent temperature: {math.trunc(game.reactor.temp)}", editw=1
+            )
 
     def get_color(self):
         return "STANDOUT"
