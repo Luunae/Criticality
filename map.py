@@ -2,6 +2,8 @@ import curses
 
 import npyscreen
 
+import forms
+
 
 class MapWidget(npyscreen.MultiLineEdit):
     def __init__(self, *args, **kwargs):
@@ -15,9 +17,8 @@ class MapWidget(npyscreen.MultiLineEdit):
         del self.handlers[curses.KEY_DC]
         del self.handlers[curses.KEY_BACKSPACE]
         del self.handlers["^R"]
-        self.add_handlers(
-            {"w": self.h_line_up, "s": self.h_line_down, "a": self.h_cursor_left, "d": self.h_cursor_right}
-        )
+        handlers = {"w": self.h_line_up, "s": self.h_line_down, "a": self.h_cursor_left, "d": self.h_cursor_right}
+        forms.add_handlers(self, handlers)
         self.room = None
         self.cursorx = None
         self.cursory = None
