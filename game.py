@@ -37,7 +37,7 @@ class TimeDisplay:
 
 class HP:
     def __init__(self):
-        self.consequences = ["1"]
+        self.consequences = []
 
 
 class Game:
@@ -52,7 +52,7 @@ class Game:
         self.player_coords = [1, 1]
         self.active_room = self.rooms[0]
         self.hp = HP()
-        self.damage_rate = len(self.hp.consequences) * 0.2
+        self.damage_rate = 0.2
         self.time = 0
         self.rads = 0
         self.td = TimeDisplay()
@@ -60,6 +60,7 @@ class Game:
         self.map = None
         self.time_txt = None
         self.room_txt = None
+        self.health_txt = None
         self.inventory_txt = None
         self.radiation_exposure_txt = None
         self.current_form = None
@@ -95,6 +96,7 @@ class Game:
         self.equipment_txt = form.add(npyscreen.TitleFixedText, name="Equipment:", value="", editable=False)
         self.air_temp = form.add(npyscreen.TitleFixedText, name="Air temp:", editable=False)
         self.radiation_exposure_txt = form.add(npyscreen.TitleFixedText, name="Rad exposure:", editable=False)
+        self.health_txt = form.add(npyscreen.TitleFixedText, name="Health:", editable=False)
         form.before_display = lambda: self.update()
         forms.add_handlers(form, {"f": self.handle_interact, "e": self.handle_interact})
 
@@ -113,6 +115,13 @@ class Game:
     def update(self):
         self.update_reactor()
 
+        if self.rads > 1000 and len(self.hp.consequences) == 0:
+            self.hp.consequences.append("Rad poisoning")
+        if self.rads > 5000 and len(self.hp.consequences) == 1:
+            self.hp.consequences.append("Severe rad poisoning")
+
+        self.damage_rate = 0.2 + len(self.hp.consequences) * 0.2
+
         self.air_temp.value = f"~{int(self.reactor.air_temp / 5) * 5}°C"
         self.map.set_room(self.active_room)
 
@@ -124,6 +133,7 @@ class Game:
         self.inventory_txt.set_value(f"{len(self.inv)} item(s)")
         self.equipment_txt.set_value(f"{', '.join([x.name for x in self.equipment])}")
         self.radiation_exposure_txt.value = f"{self.rads:05d} rad"
+        self.health_txt.set_value(f"{', '.join(self.hp.consequences)}")
 
         new_cursor_position = (
             self.player_coords[1] * (len(self.active_room.contents[0]) * 2 + 1) + self.player_coords[0] * 2

@@ -18,7 +18,7 @@ class Reactor:
     def auto_changes(self, coef):
         self.f_change += (1) * coef
         self.f_change = constrain(self.f_change, 0, 10)
-        self.flux += ((self.f_change - 5) * 6) * coef
+        self.flux += ((self.f_change - 5) * 6) * coef * (1 - self.control_rod_depth)
         self.flux = constrain(self.flux, 0, 1000)
         self.d_change -= (self.flux / 500) * coef
         self.d_change = constrain(self.d_change, 0, 10)

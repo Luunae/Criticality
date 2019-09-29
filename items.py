@@ -238,6 +238,7 @@ class Door(Entity):
 
     def interact(self, game, coords, room):
         game.set_room(self.target_room, self.target_coords)
+        game.minor_action_time()
 
         from exceptions import DummyException
 
@@ -282,13 +283,15 @@ class ControlRod(Entity):
     def interact(self, game, coords, room):
         form = npyscreen.Popup(name="Control Rod", color=self.get_color(), lines=7)
         forms.add_standard_handlers(form)
+        max_val = 100
         slider: npyscreen.Slider = form.add_widget(
-            npyscreen.Slider, lowest=0, out_of=100, value=game.reactor.control_rod_depth, step=0.25, label="Control Rod"
+            npyscreen.Slider, lowest=0, out_of=max_val, value=game.reactor.control_rod_depth * max_val, step=0.25, label="Control Rod"
         )
         old_inc = slider.h_increase
 
         def inc(ch):
             old_inc(ch)
+            game.reactor.control_rod_depth = slider.value / max_val
             game.minor_action_time()
             game.update()
             game.current_form.display()
@@ -299,7 +302,7 @@ class ControlRod(Entity):
         slider.h_increase = inc
 
         form.edit()
-        game.reactor.control_rod_depth = slider.value
+        game.reactor.control_rod_depth = slider.value / max_val
 
     def render(self, coords, room):
         return "{}"
