@@ -96,7 +96,7 @@ def launch_credits():
     import npyscreen
 
     npyscreen.notify_confirm(
-        "TODO\nas if we'd have time to finish this bit. weren't actually supposed to press that", editw=1
+        "Thanks to:\nMink, MMKII, sidereal, and various internet randoms for help with playtesting.", editw=1
     )
     return None
 
