@@ -247,7 +247,8 @@ def main_loop():
 
 class TestApp(npyscreen.NPSApp):
     def main(self):
-        themes.select_theme()
+        awful.set_cwd_for_pyinstaller()
+        themes.set_startup_theme()
         title_card()
 
         main_loop()

@@ -34,7 +34,5 @@ def select_theme_text():
     return f"Select Theme [{type(getTheme()).__name__}]"
 
 
-def select_theme():
-    import random
-
-    setTheme(random.choice(themes))
+def set_startup_theme():
+    setTheme(CriticalTheme)

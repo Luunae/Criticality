@@ -69,3 +69,10 @@ def bodge_wrap():
         return lines
 
     npyscreen.utilNotify._wrap_message_lines = _wrap_message_lines
+
+
+def set_cwd_for_pyinstaller():
+    import sys
+    import os
+
+    os.chdir(getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))))
