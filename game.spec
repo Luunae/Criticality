@@ -19,7 +19,8 @@ a = Analysis(['game.py'],
 pyz = PYZ(a.pure, a.zipped_data,
           cipher=block_cipher)
 a.datas.extend(Tree('story', 'story'))
-a.datas.extend(Tree('data', 'data'))
+if os.path.isdir('data'):
+    a.datas.extend(Tree('data', 'data'))
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
