@@ -179,7 +179,7 @@ class ReactorPart(Entity):
         if game.reactor.thermal_dump == 0 and game.reactor.temp > 130:
             dump = npyscreen.notify_yes_no(
                 f"The reactor glows ominously.\nCurrent temperature: {math.trunc(game.reactor.temp)}\nDo you want to engage the thermal dump?\n(1 use, -100 degrees)",
-                editw=1
+                editw=1,
             )
             if dump:
                 game.reactor.temp -= 100

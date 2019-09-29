@@ -11,6 +11,7 @@ class Reactor:
         self.d_change = 5
         self.vent = 500
         self.v_change = 5
+        self.air_temp = 20
 
     def auto_changes(self):
         self.f_change += 1
@@ -25,6 +26,7 @@ class Reactor:
         self.t_change += 1
         self.t_change = constrain(self.t_change, 0, 10)
         self.temp = self.temp + self.t_change + self.flux / 100 - self.dunk / 210 - self.vent / 180
+        self.air_temp = (self.air_temp * 200 + self.temp) / 201
 
     def get_statuses(self):
         return [

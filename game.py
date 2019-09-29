@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
+import glob
+from pathlib import Path
 from typing import Union, List
 
 import awful
@@ -17,7 +19,7 @@ from reactor import Reactor
 
 GAME_NAME: str = "Criticality"
 
-awful.bodge_mouse_event(npyscreen.FormWithMenus.OKBUTTON_TYPE)
+awful.patch_all()
 
 
 class TimeDisplay:
@@ -75,7 +77,7 @@ class Game:
         self.room_txt = None
         self.inventory_txt = None
         self.current_form = None
-        self.reactor_temp = None
+        self.air_temp = None
 
         self.reactor = Reactor()
         self.reactor.thermal_dump = 0
@@ -95,9 +97,7 @@ class Game:
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:", editable=False)
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
-        self.reactor_temp = form.add(
-            npyscreen.Slider, name="Reactor temp", editable=False, lowest=0, out_of=Reactor.CRITICAL_TEMP
-        )
+        self.air_temp = form.add(npyscreen.TitleFixedText, name="Air temp:", editable=False)
         form.before_display = lambda: self.update()
         forms.add_handlers(form, {"f": self.handle_interact, "e": self.handle_interact})
 
@@ -108,7 +108,7 @@ class Game:
             item.interact(game, [x, y], self.active_room)
 
     def update(self):
-        self.reactor_temp.value = int(self.reactor.temp)
+        self.air_temp.value = f"~{int(self.reactor.air_temp / 5) * 5}°C"
         self.map.set_room(self.active_room)
         if self.map.cursorx and self.map.cursory:
             self.player_coords = self.map.get_player_coords()
@@ -141,7 +141,7 @@ class MainMenu(npyscreen.FormWithMenus):
 
     def create(self):
         forms.add_standard_handlers(self, quit=True)
-        self.m1 = self.add_menu(name="Inventory", shortcut="i")
+        self.m1: npyscreen.NewMenu = self.add_menu(name="Inventory", shortcut="i")
         for idx, inv_item in enumerate(game.inv):
 
             def use_inv_item(item=inv_item):
@@ -152,13 +152,27 @@ class MainMenu(npyscreen.FormWithMenus):
             self.m1.addItemsFromList([(inv_item.name, use_inv_item)])
 
         self.m1.addItem(text="Status", onSelect=game.show_status, shortcut="s", arguments=None, keywords=None)
+        datapad: npyscreen.NewMenu = self.m1.addNewSubmenu(name="Datapad", shortcut="d")
+
+        import os
+
+        for file in sorted(glob.glob("story/datapad/*.txt")):
+            name = os.path.basename(file)
+
+            def show_file(f=file, n=name):
+                old_lines = npyscreen.PopupWide.DEFAULT_LINES
+                npyscreen.PopupWide.DEFAULT_LINES = 20
+                npyscreen.notify_confirm(Path(f).read_text(), title=n, wide=True, wrap=True)
+                npyscreen.PopupWide.DEFAULT_LINES = old_lines
+
+            datapad.addItem(text=name, onSelect=show_file)
 
 
 game = Game()
 
 
 def title_card():
-    form = MainMenu(minimum_lines=1)
+    form = MainMenu(minimum_lines=1, name=None)
     title_text = r"""
    _____ _____  _____ _______ _____ _____          _      _____ _________     __ 
   / ____|  __ \|_   _|__   __|_   _/ ____|   /\   | |    |_   _|__   __\ \   / / 
@@ -166,30 +180,34 @@ def title_card():
  | |    |  _  /  | |    | |    | || |      / /\ \ | |      | |    | |    \   /   
  | |____| | \ \ _| |_   | |   _| || |____ / ____ \| |____ _| |_   | |     | |    
   \_____|_|  \_|_____|  |_|  |_____\_____/_/    \_|______|_____|  |_|     |_|    
-                                                                                 """
-    title_text.strip("\n")
+                                                                                 
+""".strip(
+        "\n"
+    )
 
     control_text = r"""
  CONTROLS
- F          =   INTERACT/USE/ENTER
+ F/E        =   INTERACT/USE/OPEN
  ESC        =   EXIT
- WSAD/↑↓←→  =   MOVE
- 
- you wake up and everything's gone to frick
- todo fix this text
-"""
+ ↑↓←→/WSAD  =   MOVE
+ ENTER/SPACE=   SELECT
+""".lstrip(
+        "\n"
+    )
     # TODO: make Q work consistently
     title: npyscreen.MultiLineEdit = form.add_widget(
         npyscreen.MultiLineEdit,
         editable=False,
         value=title_text,
+        rely=1,
         max_height=title_text.count("\n") + 2,
         color="WARNING",
         labelColor="WARNING",
     )
-    form.add_widget(
-        npyscreen.MultiLineEdit, value=control_text, editable=False, max_height=control_text.count("\n") + 2
-    )
+
+    intro = Path("story/intro.txt").read_text()
+    pager = form.add_widget(npyscreen.Pager, values=[], max_height=form.curses_pad.getmaxyx()[0] - title.height - 4)
+    pager.values = npyscreen.utilNotify._wrap_message_lines(control_text + "\n" + intro, pager.width - 1)
 
     # TODO main menu button positions?
     theme_button = form.add_widget(npyscreen.ButtonPress, name=themes.select_theme_text())
