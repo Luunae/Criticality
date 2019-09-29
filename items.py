@@ -33,6 +33,10 @@ class Wall(Entity):
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
         top = isinstance(room.get([coords[0], coords[1] + 1]), Wall)
         bottom = isinstance(room.get([coords[0], coords[1] - 1]), Wall)
+        if left and right and top and bottom:
+            return "┼"
+        if left and right and top:
+            return "─┬"
         if left:
             if bottom:
                 return "─┘"
@@ -45,7 +49,7 @@ class Wall(Entity):
                 return "┌"
         if left or right:
             return "──"
-        return "|"
+        return "│"
 
     def get_color(self):
         return "NO_EDIT"
@@ -57,6 +61,10 @@ class RightWall(Wall):
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
         top = isinstance(room.get([coords[0], coords[1] + 1]), Wall)
         bottom = isinstance(room.get([coords[0], coords[1] - 1]), Wall)
+        if left and right and top and bottom:
+            return "┼"
+        if left and right and top:
+            return "┬"
         if left:
             if bottom:
                 return "┘ "
@@ -64,12 +72,12 @@ class RightWall(Wall):
                 return "┐ "
         if right:
             if bottom:
-                return "└"
+                return "└ "
             if top:
-                return "┌"
+                return "┌─"
         if left or right:
             return "──"
-        return "| "
+        return "│ "
 
 
 class HealthPack(Entity):
@@ -155,20 +163,28 @@ class FluxPanel(Entity):
         return "$$"
 
     def interact(self, game, coords, room):
-        # def TODO():
-        #     game.reactor.v_change = 10
-        #     npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.", title="Vent", editw=1)
-        #     form.editing = False
+        def on_press():
+            game.reactor.f_change = 10
+            npyscreen.notify_confirm("TODO flavour text", title="Flux Moderator", editw=1)
+            form.editing = False
 
         form = npyscreen.Popup(name="Flux Panel", color=self.get_color())
         forms.add_standard_handlers(form)
-        reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=TODO, name="Flux")
+        form.add_widget(
+            npyscreen.ButtonPress, when_pressed_function=on_press(), name="Dump Boron Moderator (Reduce flux)"
+        )
         form.edit()
         # TODO: hook up with game.reactor things? more widgets?
         # TODO: redraw status window after editing Flux Panel.
 
     def get_color(self):
         return "STANDOUT"
+
+
+class ControlRod(Entity):
+    # TODO: individual control rod, manual lever
+    # should be slow/expensive in game time to move manually
+    pass
 
 
 class ReactorPart(Entity):
@@ -215,6 +231,8 @@ class Door(Entity):
         right = isinstance(room.get([coords[0] + 1, coords[1]]), Wall)
         if left or right:
             return "||"
+        if isinstance(room.get([coords[0], coords[1] + 1]), RightWall):
+            return "= "
         return "="
 
 

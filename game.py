@@ -64,18 +64,20 @@ class Game:
 
     def __init__(self):
         # state of various entities/room thingies
-        self.inv = [HealthPack()]
+        self.inv = []
         self.rooms = make_rooms()
-        self.player_coords = [4, 4]
+        self.player_coords = [1, 1]
         self.active_room = self.rooms[0]
         self.hp = HP()
         self.time = 0
+        self.rads = 0
         self.td = TimeDisplay()
 
         self.map = None
         self.time_txt = None
         self.room_txt = None
         self.inventory_txt = None
+        self.radiation_exposure_txt = None
         self.current_form = None
         self.air_temp = None
 
@@ -98,6 +100,7 @@ class Game:
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
         self.air_temp = form.add(npyscreen.TitleFixedText, name="Air temp:", editable=False)
+        self.radiation_exposure_txt = form.add(npyscreen.TitleFixedText, name="Radiation exposure: ", editable=False)
         form.before_display = lambda: self.update()
         forms.add_handlers(form, {"f": self.handle_interact, "e": self.handle_interact})
 
@@ -115,6 +118,7 @@ class Game:
 
         self.time_txt.set_value(f"{self.td.text()}")
         self.inventory_txt.set_value(f"{len(self.inv)} item(s)")
+        self.radiation_exposure_txt.value = f"{self.rads:05d} rad"
 
         new_cursor_position = (
             self.player_coords[1] * (len(self.active_room.contents[0]) * 2 + 1) + self.player_coords[0] * 2
@@ -124,8 +128,8 @@ class Game:
         self.room_txt.set_value(f"{self.active_room.name} ({self.player_coords})")
 
 
-class MainMenu(npyscreen.FormWithMenus):
-    def __init__(self, name=f"{GAME_NAME}", minimum_columns=40, minimum_lines=30, *args, **keywords):
+class MainMenu(npyscreen.FormBaseNewWithMenus):
+    def __init__(self, name=f"{GAME_NAME}", minimum_columns=40, minimum_lines=25, *args, **keywords):
         super().__init__(
             name=name, minimum_columns=minimum_columns, minimum_lines=minimum_lines, ok_button=False, *args, **keywords
         )
@@ -180,17 +184,14 @@ def title_card():
  | |    |  _  /  | |    | |    | || |      / /\ \ | |      | |    | |    \   /   
  | |____| | \ \ _| |_   | |   _| || |____ / ____ \| |____ _| |_   | |     | |    
   \_____|_|  \_|_____|  |_|  |_____\_____/_/    \_|______|_____|  |_|     |_|    
-                                                                                 
 """.strip(
         "\n"
     )
 
     control_text = r"""
  CONTROLS
- F/E        =   INTERACT/USE/OPEN
- ESC        =   EXIT
- ↑↓←→/WSAD  =   MOVE
- ENTER/SPACE=   SELECT
+ F/E        =   INTERACT/USE/OPEN       ↑↓←→/WSAD  =   MOVE
+ ESC        =   EXIT                    ENTER/SPACE=   SELECT
 """.lstrip(
         "\n"
     )
@@ -206,17 +207,50 @@ def title_card():
     )
 
     intro = Path("story/intro.txt").read_text()
-    pager = form.add_widget(npyscreen.Pager, values=[], max_height=form.curses_pad.getmaxyx()[0] - title.height - 4)
-    pager.values = npyscreen.utilNotify._wrap_message_lines(control_text + "\n" + intro, pager.width - 1)
 
-    # TODO main menu button positions?
-    theme_button = form.add_widget(npyscreen.ButtonPress, name=themes.select_theme_text())
+    intro_pager = form.add_widget(
+        npyscreen.Pager, values=[], max_height=form.curses_pad.getmaxyx()[0] - title.height - 3
+    )
+    intro_pager.values = npyscreen.utilNotify._wrap_message_lines(control_text + "\n" + intro, intro_pager.width - 1)
+    for widget in intro_pager._my_widgets[:3]:
+        widget.color = "CURSOR"
+
+    button_x_gap = 8
+    start_button: npyscreen.ButtonPress = form.add_widget(npyscreen.ButtonPress, name="Start", use_max_space=True)
+
+    def start():
+        form.editing = False
+
+    start_button.when_pressed_function = start
+    last = start_button
+
+    theme_button = form.add_widget(
+        npyscreen.ButtonPress,
+        name=themes.select_theme_text(),
+        rely=last.rely,
+        relx=last.width + last.relx + button_x_gap,
+        use_max_space=True,
+    )
+
+    last = theme_button
+    credits_button = form.add_widget(
+        npyscreen.ButtonPress,
+        name="Credits",
+        rely=last.rely,
+        relx=last.width + last.relx + button_x_gap,
+        use_max_space=True,
+    )
+    credits_button.when_pressed_function = menus.launch_credits
+    last = theme_button
+
     theme_button.when_pressed_function = lambda: form.popup_menu(menus.create_theme_menu(form, theme_button))
+
+    form.set_editing(start_button)
     form.edit()
 
 
 def draw_game_ui():
-    form = MainMenu()
+    form = MainMenu(minimum_lines=10)
 
     game.setup_form(form)
 

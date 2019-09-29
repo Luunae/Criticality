@@ -2,6 +2,8 @@
 
 block_cipher = None
 
+import os
+
 a = Analysis(['game.py'],
              pathex=[],
              binaries=[],
@@ -17,6 +19,7 @@ a = Analysis(['game.py'],
 pyz = PYZ(a.pure, a.zipped_data,
           cipher=block_cipher)
 a.datas.extend(Tree('story', 'story'))
+a.datas.extend(Tree('data', 'data'))
 exe = EXE(pyz,
           a.scripts,
           a.binaries,
@@ -30,4 +33,5 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=True)
+          console=True,
+          icon=os.path.realpath('8coolguy.ico'))

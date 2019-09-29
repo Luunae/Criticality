@@ -35,3 +35,10 @@ def create_theme_menu(form: Form, button):
 
         menu.addItem(text=f"{idx:02d} {theme.__name__}", onSelect=select_theme)
     return menu
+
+
+def launch_credits():
+    import npyscreen
+
+    npyscreen.notify_confirm("TODO\nas if we'd have time to finish this bit. weren't actually supposed to press that")
+    return None
