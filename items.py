@@ -22,6 +22,9 @@ class Entity:
     def get_color(self):
         return "DEFAULT"
 
+    def use_item(self, game):
+        npyscreen.notify_confirm("OAK: There's a time and a place for everything! But not now.", editw=1)
+
 
 class Wall(Entity):
     def __init__(self):
