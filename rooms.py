@@ -106,7 +106,9 @@ def make_rooms():
 """,
     )
     sleeping_quarters.contents[7][14] = sleeping_quarters_door = items.Door()
+    sleeping_quarters.contents[1][14] = box = items.Box()
     sleeping_quarters.name = "Sleeping Quarters"
+    box.inv.append(items.HEVSuit())
 
     # TODO: make more rooms
 

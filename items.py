@@ -305,3 +305,19 @@ class ControlRod(Entity):
 
     def get_color(self):
         return "CRITICAL"
+
+
+class HEVSuit(Entity):
+    def __init__(self):
+        super().__init__()
+        self.name = "HEV Suit"
+
+    def use_item(self, game):
+        game.rad_mult = 0.02
+        game.inv.remove(self)
+        game.equipment.append(self)
+        game.update()
+        game.current_form.display()
+        npyscreen.notify_confirm(
+            "Equipped the Hazardous EnVironment Suit, which reduces damage and radiation exposure.",
+            title="Item Equipped")

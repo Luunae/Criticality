@@ -67,6 +67,9 @@ class Game:
         self.set_map_pos = True
         self.get_map_pos = False
         self.last_time = 0
+        self.rad_mult = 1
+        self.equipment_txt = None
+        self.equipment = []
 
         self.reactor = Reactor()
 
@@ -87,10 +90,11 @@ class Game:
         self.map = form.add(MapWidget, max_height=10)
         self.map.game = self
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:", editable=False)
-        self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
+        self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
+        self.equipment_txt = form.add(npyscreen.TitleFixedText, name="Equipment:", value="", editable=False)
         self.air_temp = form.add(npyscreen.TitleFixedText, name="Air temp:", editable=False)
-        self.radiation_exposure_txt = form.add(npyscreen.TitleFixedText, name="Radiation exposure: ", editable=False)
+        self.radiation_exposure_txt = form.add(npyscreen.TitleFixedText, name="Rad exposure:", editable=False)
         form.before_display = lambda: self.update()
         forms.add_handlers(form, {"f": self.handle_interact, "e": self.handle_interact})
 
@@ -118,6 +122,7 @@ class Game:
 
         self.time_txt.set_value(f"{self.td.text()}")
         self.inventory_txt.set_value(f"{len(self.inv)} item(s)")
+        self.equipment_txt.set_value(f"{', '.join([x.name for x in self.equipment])}")
         self.radiation_exposure_txt.value = f"{self.rads:05d} rad"
 
         new_cursor_position = (
@@ -131,7 +136,7 @@ class Game:
         time = floor(self.time)
         for i in range(0, time - self.last_time):
             self.reactor.auto_changes(0.5)
-            self.rads += self.active_room.rads_per_sec
+            self.rads += int(self.active_room.rads_per_sec * self.rad_mult)
         self.last_time = time
 
         if game.reactor.status_percentage() >= 1:
