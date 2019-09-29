@@ -9,6 +9,7 @@ class Room:
     def __init__(self):
         self.contents = [[]]
         self.name = "FIXME"
+        self.rads_per_sec = 1
 
     def empty(self, dims):
         """

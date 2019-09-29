@@ -55,6 +55,7 @@ def make_rooms():
     reactor_room.contents[4][4] = items.ReactorPart()
     reactor_room.contents[4][5] = box = items.Box()
     reactor_room.contents[5][4] = items.VentPanel()
+    reactor_room.rads_per_sec = 80
     box.inv.append(items.HealthPack())
     note = items.Note()
     note.text = "137"
@@ -70,6 +71,7 @@ def make_rooms():
 
     control_rod_room = room.Room()
     control_rod_room.name = "Control Rod Access"
+    control_rod_room.rads_per_sec = 150
     control_rod_room.contents = contents_from_text(
         9,
         r"""

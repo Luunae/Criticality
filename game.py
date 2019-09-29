@@ -131,6 +131,7 @@ class Game:
         time = floor(self.time)
         for i in range(0, time - self.last_time):
             self.reactor.auto_changes(0.5)
+            self.rads += self.active_room.rads_per_sec
         self.last_time = time
 
         if game.reactor.status_percentage() >= 1:

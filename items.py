@@ -266,7 +266,7 @@ class LockedDoor(Door):
 
 class ControlRod(Entity):
     def interact(self, game, coords, room):
-        form = npyscreen.Popup(name="Control Rod", color=self.get_color())
+        form = npyscreen.Popup(name="Control Rod", color=self.get_color(), lines=7)
         forms.add_standard_handlers(form)
         slider: npyscreen.Slider = form.add_widget(
             npyscreen.Slider, lowest=0, out_of=100, value=game.reactor.control_rod_depth, step=0.25, label="Control Rod"
@@ -277,6 +277,7 @@ class ControlRod(Entity):
             old_inc(ch)
             game.minor_action_time()
             game.update()
+            game.current_form.display()
 
         for key, handler in slider.handlers.items():
             if handler == old_inc:
