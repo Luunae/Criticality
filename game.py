@@ -153,6 +153,10 @@ class Game:
             self.rads += int(self.active_room.rads_per_sec * self.rad_mult)
         self.last_time = time
 
+        if time > 70:
+            npyscreen.notify_confirm("Assistance has arrived. You win!", title="Rescue", editw=1, form_color='GOOD')
+            exit(0)
+
         if game.reactor.status_percentage() >= 1:
             # TODO flavor text
             npyscreen.notify_confirm("The reactor explodes violently.", title="Meltdown", editw=1)
