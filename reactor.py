@@ -1,4 +1,6 @@
 class Reactor:
+    CRITICAL_TEMP = 200
+
     def __init__(self):
         # Things to keep in certain bounds
         self.temp = 100
@@ -35,6 +37,9 @@ class Reactor:
             f"temp:\t\t{self.temp:03.3f}",
             f"t_change:\t{self.t_change:03.3f}",
         ]
+
+    def status_percentage(self):
+        return self.temp / Reactor.CRITICAL_TEMP
 
 
 def constrain(val, min_val, max_val):

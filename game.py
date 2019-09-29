@@ -75,6 +75,7 @@ class Game:
         self.room_txt = None
         self.inventory_txt = None
         self.current_form = None
+        self.reactor_temp = None
 
         self.reactor = Reactor()
         self.reactor.thermal_dump = 0
@@ -94,6 +95,9 @@ class Game:
         self.time_txt = form.add(npyscreen.TitleFixedText, name="Time:", editable=False)
         self.inventory_txt = form.add(npyscreen.TitleFixedText, name="Inventory:", editable=False)
         self.room_txt = form.add(npyscreen.TitleFixedText, name="Room:", value="set this to roomLoc", editable=False)
+        self.reactor_temp = form.add(
+            npyscreen.Slider, name="Reactor temp", editable=False, lowest=0, out_of=Reactor.CRITICAL_TEMP
+        )
         form.before_display = lambda: self.update()
         forms.add_handlers(form, {"f": self.handle_interact, "e": self.handle_interact})
 
@@ -104,6 +108,7 @@ class Game:
             item.interact(game, [x, y], self.active_room)
 
     def update(self):
+        self.reactor_temp.value = int(self.reactor.temp)
         self.map.set_room(self.active_room)
         if self.map.cursorx and self.map.cursory:
             self.player_coords = self.map.get_player_coords()
@@ -206,39 +211,28 @@ def draw_game_ui():
     game.update()
 
 
+def main_loop():
+    last_time = 0
+    while True:
+        minor_action_time()
+        draw_game_ui()
+
+        for i in range(0, game.time - last_time):
+            game.reactor.auto_changes()
+        last_time = game.time
+
+        if game.reactor.status_percentage() >= 1:
+            # TODO flavor text
+            npyscreen.notify_confirm("The reactor explodes violently.", title="Meltdown", editw=1)
+            break
+
+
 class TestApp(npyscreen.NPSApp):
     def main(self):
         themes.select_theme()
         title_card()
-        last_time = 0
-        while True:
-            minor_action_time()
-            draw_game_ui()
 
-            for i in range(0, game.time - last_time):
-                game.reactor.auto_changes()
-            last_time = game.time
-
-            if game.reactor.temp > 200:
-                game.good_end = 0
-
-            if game.time > 99:
-                if game.reactor.temp < 151:
-                    game.good_end = 1
-
-                else:
-                    game.good_end = 0.5
-
-        if game.good_end == 0:
-            # Bad End
-            pass
-
-        elif game.good_end == 1:
-            # Good End
-            pass
-        else:
-            # sudden death, reinforcements?
-            pass
+        main_loop()
 
 
 if __name__ == "__main__":
