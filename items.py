@@ -141,7 +141,7 @@ class DunkPanel(Entity):
         return "$$"
 
     def interact(self, game, coords, room):
-        form = npyscreen.Popup(name="Dunk Panel", color=self.get_color())
+        form = npyscreen.Popup(name="Dunk Panel", color=self.get_color(), lines=6)
         forms.add_standard_handlers(form)
         temp = form.add_widget(
             npyscreen.Slider,
@@ -167,11 +167,14 @@ class VentPanel(Entity):
     def interact(self, game, coords, room):
         def vent_max():
             game.reactor.v_change = 10
-            npyscreen.notify_confirm("You hear a loud wind in the ductwork above you.\n"
-                                     "(v_change = 10, Venting temporarily increased!)", title="Vent", editw=1)
+            npyscreen.notify_confirm(
+                "You hear a loud wind in the ductwork above you.\n" "(v_change = 10, Venting temporarily increased!)",
+                title="Vent",
+                editw=1,
+            )
             form.editing = False
 
-        form = npyscreen.Popup(name="Vent Panel", color=self.get_color())
+        form = npyscreen.Popup(name="Vent Panel", color=self.get_color(), lines=6)
         forms.add_standard_handlers(form)
         reactor.v_change = form.add_widget(npyscreen.ButtonPress, when_pressed_function=vent_max, name="Vent")
         form.edit()
@@ -192,7 +195,7 @@ class FluxPanel(Entity):
             npyscreen.notify_confirm("TODO flavour text", title="Flux Moderator", editw=1)
             form.editing = False
 
-        form = npyscreen.Popup(name="Flux Panel", color=self.get_color())
+        form = npyscreen.Popup(name="Flux Panel", color=self.get_color(), lines=6)
         forms.add_standard_handlers(form)
         form.add_widget(
             npyscreen.ButtonPress, when_pressed_function=on_press, name="Dump Boron Moderator (Reduce flux)"
@@ -281,11 +284,16 @@ class LockedDoor(Door):
 
 class ControlRod(Entity):
     def interact(self, game, coords, room):
-        form = npyscreen.Popup(name="Control Rod", color=self.get_color(), lines=7)
+        form = npyscreen.Popup(name="Control Rod", color=self.get_color(), lines=6)
         forms.add_standard_handlers(form)
         max_val = 100
         slider: npyscreen.Slider = form.add_widget(
-            npyscreen.Slider, lowest=0, out_of=max_val, value=game.reactor.control_rod_depth * max_val, step=0.25, label="Control Rod"
+            npyscreen.Slider,
+            lowest=0,
+            out_of=max_val,
+            value=game.reactor.control_rod_depth * max_val,
+            step=0.25,
+            label="Control Rod",
         )
         old_inc = slider.h_increase
 
@@ -324,4 +332,6 @@ class HEVSuit(Entity):
         game.current_form.display()
         npyscreen.notify_confirm(
             "Equipped the Hazardous EnVironment Suit, which reduces damage and radiation exposure.",
-            title="Item Equipped")
+            title="Item Equipped",
+            editw=1,
+        )
